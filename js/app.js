@@ -38,6 +38,19 @@
     const allData = loaded.flatMap(r => r.records);
     const loadedBases = loaded.map(r => r.ds.id);
 
+    /* ---- Registre pipeline ACR (facultatif) : data/pipeline.json ---- */
+    try {
+      const plResp = await fetch('data/pipeline.json');
+      if (plResp.ok) {
+        const plEntries = await plResp.json();
+        const bySite = Object.fromEntries(plEntries.map(e => [e.site, e]));
+        allData.forEach(r => {
+          const raw = r.id.replace(/^(chp|inj)-/, '');
+          if (bySite[raw]) r.pipeline = bySite[raw];
+        });
+      }
+    } catch (e) { /* registre absent : couche pipeline simplement inactive */ }
+
     /* ---- Init des modules ---- */
     MapView.init();
     Charts.init();
