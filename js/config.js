@@ -37,6 +37,23 @@ const CONFIG = (() => {
   };
   const TYPE_FALLBACK = PALETTE.grey;
 
+  /* ---- Les deux catégories du registre ACR (retour Daniel, 02/09) ----
+     relationship : ce que l'équipe sait du site ; grid : difficulté du
+     GRD gaz constatée (délai de raccordement). Alimentées par
+     data/pipeline.json ; défaut = unknown / non noté. */
+  const EVAL_LABELS = {
+    owners: 'Owners known',
+    feedstock: 'Feedstock suppliers nearby',
+    rejected: 'Evaluated & rejected',
+    evaluating: 'Under evaluation',
+    unknown: 'Unknown',
+  };
+  const GRID_LABELS = {
+    easy: 'Easy (\u2264 12 months)',
+    medium: 'Medium (12\u201324 months)',
+    hard: 'Hard (~36 months)',
+  };
+
   // Explication courte de chaque type (tooltips légende + filtres)
   const TYPE_DESCRIPTIONS = {
     'Biogas': 'CHP engine burning raw biogas from on-site anaerobic digestion — the conversion target',
@@ -168,7 +185,7 @@ const CONFIG = (() => {
       && fin >= 2026 && fin <= 2032 && !d.zuschlag;
   }
 
-  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, TYPE_DESCRIPTIONS, DATASETS, CAP_UNITS, SOURCE_NOTE,
+  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, TYPE_DESCRIPTIONS, EVAL_LABELS, GRID_LABELS, DATASETS, CAP_UNITS, SOURCE_NOTE,
            YEAR_FLOOR, YEAR_FLOOR_LABEL,
            fmtInt, fmtNum, fmtDate, escapeHtml, typeColor, echeance, prospection1 };
 })();
