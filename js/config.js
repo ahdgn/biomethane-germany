@@ -64,7 +64,7 @@ const CONFIG = (() => {
         base: 'injection',
         nom: d.nom || 'Unnamed',
         commune: d.gem || d.ort || '',
-        departement: '',
+        departement: d.lk || '',
         region: d.bl || '',
         type: d.tech || 'Sonstige',
         capacite: d.kw ? d.kw / 1000 : 0, // MW
