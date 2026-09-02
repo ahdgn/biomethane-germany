@@ -73,6 +73,8 @@ def main():
     gp = pd.read_sql('SELECT * FROM "gas_producer"', engine)
     gp = gp[gp["Technologie"].isin(
         ["Biomethan-Erzeugung", "Power-to-Gas (Wasserstoff)", "Power-to-Gas (Methan)"])]
+    # foreign registrations (e.g. Dutch plants) carry no Bundesland and no AGS
+    gp = gp[gp["Bundesland"].notna() | gp["Gemeindeschluessel"].notna()]
     gp["annee"] = pd.to_datetime(gp["Inbetriebnahmedatum"], errors="coerce").dt.year
     out = []
     for _, u in gp.iterrows():

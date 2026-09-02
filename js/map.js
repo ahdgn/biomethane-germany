@@ -81,10 +81,11 @@ const MapView = (() => {
     if (map) map.fitBounds(FRANCE_BOUNDS, { padding: [10, 10] });
   }
 
-  /* Rayon proportionnel à la racine de la capacité (5 → 13 px) */
+  /* Rayon ∝ racine de la capacité en MW — étalonné sur la plage allemande :
+     75 kW ≈ 4,5 px · 500 kW ≈ 5,7 px · 1,5 MW ≈ 7,6 px · 7 MW ≈ 13 px */
   function radiusFor(capacite) {
-    if (!capacite || capacite <= 0) return 5;
-    return Math.max(5, Math.min(13, 3.4 + Math.sqrt(capacite) * 1.15));
+    if (!capacite || capacite <= 0) return 4.5;
+    return Math.max(4.5, Math.min(13, 3 + Math.sqrt(capacite * 1000) * 0.12));
   }
 
   function createIcon(d) {
@@ -187,11 +188,8 @@ const MapView = (() => {
   function updateLegend(data) {
     if (!legendDiv) return;
     const counts = {};
-    let hasCogen = false, hasCommune = false;
     data.forEach(d => {
       counts[d.type] = (counts[d.type] || 0) + 1;
-      if (d.base === 'cogen') hasCogen = true;
-      if (d.geoPrecision === 'commune') hasCommune = true;
     });
     const types = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
 
@@ -207,15 +205,15 @@ const MapView = (() => {
       <div class="map-legend-body">
       ${types.map(t => {
         const diamond = ['Biogas', 'Biomethan (Bioerdgas)', 'Klärgas', 'Deponiegas'].includes(t) ? ' diamond' : '';
+        const desc = CONFIG.TYPE_DESCRIPTIONS[t] || '';
         return `<div class="legend-item" data-type="${escapeHtml(t)}" role="button" tabindex="0"
-             title="Click to show / hide this type">
+             title="${escapeHtml(desc ? desc + ' — click to show / hide' : 'Click to show / hide this type')}">
           <span class="type-dot${diamond}" style="background:${typeColor(t)}"></span>
           <span class="type-name">${escapeHtml(t)}</span>
           <span class="type-count">${counts[t].toLocaleString('en-GB')}</span>
         </div>`;
       }).join('')}
-      ${hasCogen && hasCommune ? '<div class="legend-note">◆ CHP — position at municipality level</div>' : ''}
-      <div class="legend-note">Dot size ∝ capacity</div>
+      <div class="legend-note">◆ CHP · ● injection — dot size ∝ capacity (MW)</div>
       </div>`;
 
     legendDiv.querySelector('.map-legend-toggle').addEventListener('click', () => {

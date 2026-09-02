@@ -37,6 +37,18 @@ const CONFIG = (() => {
   };
   const TYPE_FALLBACK = PALETTE.grey;
 
+  // Explication courte de chaque type (tooltips légende + filtres)
+  const TYPE_DESCRIPTIONS = {
+    'Biogas': 'CHP engine burning raw biogas from on-site anaerobic digestion — the conversion target',
+    'Biomethan (Bioerdgas)': 'CHP engine running on upgraded biomethane drawn from the gas grid',
+    'Klärgas': 'CHP running on sewage gas at a wastewater treatment plant',
+    'Deponiegas': 'CHP running on landfill gas',
+    'Biomethan-Erzeugung': 'Upgrading plant producing biomethane and injecting it into the gas grid',
+    'Power-to-Gas (Wasserstoff)': 'Hydrogen production by electrolysis',
+    'Power-to-Gas (Methan)': 'Synthetic methane from electrolysis plus methanation',
+    'Sonstige': 'Technology not specified in the register',
+  };
+
   /* Jeux de données. Les ids 'injection' et 'cogen' sont structurels
      (utilisés par app/map/charts/filters) : injection = unités de
      production de gaz (Einspeisung), cogen = BHKW biogaz (cibles). */
@@ -156,7 +168,7 @@ const CONFIG = (() => {
       && fin >= 2026 && fin <= 2032 && !d.zuschlag;
   }
 
-  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, DATASETS, CAP_UNITS, SOURCE_NOTE,
+  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, TYPE_DESCRIPTIONS, DATASETS, CAP_UNITS, SOURCE_NOTE,
            YEAR_FLOOR, YEAR_FLOOR_LABEL,
            fmtInt, fmtNum, fmtDate, escapeHtml, typeColor, echeance, prospection1 };
 })();

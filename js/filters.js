@@ -81,7 +81,7 @@ const Filters = (() => {
       return `<label>
         <input type="checkbox" value="${escapeHtml(type)}" checked>
         <span class="type-dot${diamond}" style="background:${typeColor(type)}"></span>
-        <span class="type-name" title="${escapeHtml(type)}">${escapeHtml(type)}</span>
+        <span class="type-name" title="${escapeHtml(CONFIG.TYPE_DESCRIPTIONS[type] || type)}">${escapeHtml(type)}</span>
         <span class="type-count">${fmtInt(counts[type])}</span>
       </label>`;
     }).join('');
