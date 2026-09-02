@@ -57,7 +57,7 @@ const Filters = (() => {
       const group = document.getElementById('group-base');
       group.hidden = false;
       const seg = document.getElementById('filter-base');
-      const opts = [{ id: '', label: 'Toutes' },
+      const opts = [{ id: '', label: 'All' },
                     ...loadedBases.map(b => DATASETS.find(ds => ds.id === b))];
       seg.innerHTML = opts.map(o =>
         `<button class="seg-btn" data-base="${o.id}" aria-pressed="${o.id === state.base}">${escapeHtml(o.label)}</button>`
@@ -77,7 +77,7 @@ const Filters = (() => {
 
     const container = document.getElementById('filter-site-type');
     container.innerHTML = allTypes.map(type => {
-      const diamond = type.startsWith('Cogénération') ? ' diamond' : '';
+      const diamond = ['Biogas', 'Biomethan (Bioerdgas)', 'Klärgas', 'Deponiegas'].includes(type) ? ' diamond' : '';
       return `<label>
         <input type="checkbox" value="${escapeHtml(type)}" checked>
         <span class="type-dot${diamond}" style="background:${typeColor(type)}"></span>
@@ -353,19 +353,19 @@ const Filters = (() => {
     const totalShown = allData.filter(d => !state.base || d.base === state.base).length;
 
     const cards = [];
-    cards.push(kpi('Sites affichés',
+    cards.push(kpi('Sites shown',
       `${fmtInt(filteredData.length)} <span class="kpi-sub">/ ${fmtInt(totalShown)}</span>`));
-    cards.push(kpi(`Capacité d'injection`,
+    cards.push(kpi('Injection capacity',
       `${fmtNum(capInj, capInj >= 1000 ? 0 : 1)} <span class="kpi-sub">${CAP_UNITS.injection}</span>`, true));
     if (loadedBases.includes('cogen')) {
       const capCog = cog.reduce((s, d) => s + (d.capacite || 0), 0);
-      cards.push(kpi('Cogénérations',
+      cards.push(kpi('CHP plants',
         `${fmtInt(cog.length)} <span class="kpi-sub">· ${fmtNum(capCog, 0)} ${CAP_UNITS.cogen}</span>`));
     } else {
       const open = filteredData.filter(d => d.ouvert).length;
-      cards.push(kpi('Sites ouverts', fmtInt(open)));
+      cards.push(kpi('Sites in operation', fmtInt(open)));
     }
-    cards.push(kpi('Régions couvertes',
+    cards.push(kpi('Bundesländer covered',
       `${regions.size} <span class="kpi-sub">/ 16</span>`));
 
     strip.innerHTML = cards.join('');

@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cartographie et analyse des unités biogaz (BHKW, cibles de conversion) et de la production de gaz renouvelable en Allemagne — registre MaStR.">
-  <title>Biomethan Deutschland — Portail de suivi</title>
+  <meta name="description" content="Map and analysis of German biogas CHP plants (conversion targets) and renewable-gas production units — MaStR register.">
+  <title>Biomethan Deutschland — Screening portal</title>
   <link rel="icon" type="image/png" href="assets/nautilus-icon.png">
 
   <!-- Librairies vendorisées (pas de CDN, pas de fonte externe) -->
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/leaflet/MarkerCluster.css">
-  <link rel="stylesheet" href="css/style.css?v=20260902-1">
+  <link rel="stylesheet" href="css/style.css?v=20260902-2">
 </head>
 <body>
 
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-brand">
-      <button class="icon-btn" id="sidebar-toggle" aria-label="Afficher ou masquer les filtres"
+      <button class="icon-btn" id="sidebar-toggle" aria-label="Show or hide filters"
               aria-expanded="true" aria-controls="sidebar">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"
           stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -25,7 +25,7 @@
       <img src="assets/nautilus-logo.png" alt="Nautilus" class="brand-logo">
       <span class="brand-sep" aria-hidden="true"></span>
       <h1>Biomethan Deutschland</h1>
-      <span class="header-badge">Portail de suivi</span>
+      <span class="header-badge">Screening portal</span>
     </div>
     <div class="header-meta" id="header-meta"></div>
   </header>
@@ -35,11 +35,11 @@
 
     <!-- SIDEBAR : filtres uniquement -->
     <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
-    <aside class="sidebar" id="sidebar" aria-label="Filtres">
+    <aside class="sidebar" id="sidebar" aria-label="Filters">
       <div class="filters-head">
-        <h2 class="filters-title">Filtres</h2>
+        <h2 class="filters-title">Filters</h2>
         <button class="btn-reset" id="btn-reset" hidden>
-          Réinitialiser <span class="reset-count" id="reset-count"></span>
+          Reset <span class="reset-count" id="reset-count"></span>
         </button>
       </div>
 
@@ -49,49 +49,48 @@
           <label class="switch">
             <input type="checkbox" id="filter-prospection">
             <span class="switch-track" aria-hidden="true"></span>
-            <span class="switch-text">Filtre prospection 1</span>
+            <span class="switch-text">Prospecting filter 1</span>
           </label>
           <button class="info-btn" id="prospection-info-btn" aria-expanded="false"
-                  aria-controls="prospection-info" aria-label="Périmètre du filtre prospection 1">i</button>
+                  aria-controls="prospection-info" aria-label="Scope of prospecting filter 1">i</button>
         </div>
         <div class="info-pop" id="prospection-info" hidden>
-          <strong>Périmètre appliqué</strong> (weekly 12/06/2026 · stratégie v2)
+          <strong>Scope applied</strong> (placeholder — pending the screening workshop)
           <ul>
-            <li><b>Injection</b> : agricole autonome / agricole territorial / industriel territorial · site ouvert · capacité 5–25 GWh/an</li>
-            <li><b>Cogénérations</b> : filière bioénergies · en service · ≥ 1 GWh él/an · hors combustibles spécifiques (bois, déchets ménagers ou industriels, papeterie, biogaz de STEP)</li>
+            <li><b>CHP</b>: biogas-fuelled · in operation · 75 kW – 1.5 MW el · EEG support ending 2026–2032 · plants with a tender award (follow-up support secured) excluded</li>
           </ul>
-          Se combine avec les autres filtres (ex. échéance 2026-29).
+          Thresholds live in <code>tools/screening_params.example.json</code> and will be set by the expert workshop. Combines with the other filters.
         </div>
       </div>
 
       <!-- Base (visible quand plusieurs jeux de données sont chargés) -->
       <div class="filter-group" id="group-base" hidden>
-        <span class="filter-label" id="label-base">Base</span>
+        <span class="filter-label" id="label-base">Dataset</span>
         <div class="segmented" id="filter-base" role="group" aria-labelledby="label-base"></div>
       </div>
 
       <!-- Recherche -->
       <div class="filter-group">
-        <label class="filter-label" for="filter-search">Recherche</label>
+        <label class="filter-label" for="filter-search">Search</label>
         <div class="search-box">
-          <input type="search" id="filter-search" placeholder="Projet ou commune…" autocomplete="off">
+          <input type="search" id="filter-search" placeholder="Plant or municipality…" autocomplete="off">
         </div>
       </div>
 
-      <!-- Région -->
+      <!-- Bundesland -->
       <div class="filter-group">
-        <label class="filter-label" for="filter-region">Région</label>
+        <label class="filter-label" for="filter-region">Bundesland</label>
         <select id="filter-region">
-          <option value="">Toutes les régions</option>
+          <option value="">All Bundesländer</option>
         </select>
       </div>
 
       <!-- Type de site -->
       <div class="filter-group">
         <div class="filter-label-row">
-          <span class="filter-label" id="label-types">Type de site</span>
+          <span class="filter-label" id="label-types">Site type</span>
           <span class="filter-label-actions">
-            <button class="link-btn" id="types-all">tout</button>·<button class="link-btn" id="types-none">aucun</button>
+            <button class="link-btn" id="types-all">all</button>·<button class="link-btn" id="types-none">none</button>
           </span>
         </div>
         <div id="filter-site-type" class="checkbox-group" role="group" aria-labelledby="label-types"></div>
@@ -99,44 +98,44 @@
 
       <!-- Période de mise en service -->
       <div class="filter-group">
-        <span class="filter-label" id="label-years">Mise en service&nbsp;: <strong id="year-range-label"></strong></span>
+        <span class="filter-label" id="label-years">Commissioned&nbsp;: <strong id="year-range-label"></strong></span>
         <div class="dual-range" id="year-range">
           <div class="dual-range-track" aria-hidden="true"><div class="dual-range-fill" id="year-range-fill"></div></div>
-          <input type="range" id="filter-year-min" aria-label="Année de mise en service minimale">
-          <input type="range" id="filter-year-max" aria-label="Année de mise en service maximale">
+          <input type="range" id="filter-year-min" aria-label="Earliest commissioning year">
+          <input type="range" id="filter-year-max" aria-label="Latest commissioning year">
         </div>
         <div class="dual-range-bounds" aria-hidden="true">
           <span id="year-bound-min"></span><span id="year-bound-max"></span>
         </div>
       </div>
 
-      <!-- Fenêtre de décision (échéance de contrat estimée) -->
+      <!-- Fenêtre de décision (fin de soutien EEG estimée) -->
       <div class="filter-group">
-        <span class="filter-label" id="label-window">Échéance de contrat estimée</span>
+        <span class="filter-label" id="label-window">Estimated support end (EEG)</span>
         <div class="segmented" id="filter-window" role="group" aria-labelledby="label-window">
-          <button class="seg-btn" data-window="" aria-pressed="true">Toutes</button>
-          <button class="seg-btn" data-window="echue" aria-pressed="false">Échue</button>
+          <button class="seg-btn" data-window="" aria-pressed="true">All</button>
+          <button class="seg-btn" data-window="echue" aria-pressed="false">Expired</button>
           <button class="seg-btn" data-window="2026-2029" aria-pressed="false">2026–29</button>
           <button class="seg-btn" data-window="2030+" aria-pressed="false">2030+</button>
         </div>
-        <span class="filter-hint">Estimation : injection 15 ans · cogé biogaz 20 ans · gaz naturel C13/C16 12/15 ans</span>
+        <span class="filter-hint">Estimate: EEG remuneration runs 20 years from commissioning · tender winners (+10 y) flagged in plant details</span>
       </div>
 
-      <!-- Opérateur réseau -->
+      <!-- District (Landkreis) -->
       <div class="filter-group">
-        <label class="filter-label" for="filter-operator">Opérateur réseau</label>
+        <label class="filter-label" for="filter-operator">District (Landkreis)</label>
         <select id="filter-operator">
-          <option value="">Tous les opérateurs</option>
+          <option value="">All districts</option>
         </select>
       </div>
 
       <!-- Statut -->
       <div class="filter-group">
-        <span class="filter-label" id="label-status">Statut</span>
+        <span class="filter-label" id="label-status">Status</span>
         <div class="segmented" id="filter-status" role="group" aria-labelledby="label-status">
-          <button class="seg-btn" data-status="" aria-pressed="true">Tous</button>
-          <button class="seg-btn" data-status="open" aria-pressed="false">Ouverts</button>
-          <button class="seg-btn" data-status="closed" aria-pressed="false">Fermés</button>
+          <button class="seg-btn" data-status="" aria-pressed="true">All</button>
+          <button class="seg-btn" data-status="open" aria-pressed="false">Operating</button>
+          <button class="seg-btn" data-status="closed" aria-pressed="false">Closed</button>
         </div>
       </div>
     </aside>
@@ -145,30 +144,30 @@
     <main class="main-content">
 
       <!-- Bandeau KPI -->
-      <section class="kpi-strip" id="kpi-strip" aria-label="Indicateurs clés"></section>
+      <section class="kpi-strip" id="kpi-strip" aria-label="Key indicators"></section>
 
       <!-- Carte -->
       <div class="map-container">
-        <div id="map" aria-label="Carte des sites"></div>
+        <div id="map" aria-label="Site map"></div>
         <div class="map-empty" id="map-empty" hidden>
-          <p>Aucun site ne correspond aux filtres.</p>
-          <button class="btn-secondary" id="map-empty-reset">Réinitialiser les filtres</button>
+          <p>No sites match the filters.</p>
+          <button class="btn-secondary" id="map-empty-reset">Reset filters</button>
         </div>
       </div>
 
       <!-- Panneau bas : redimensionnable -->
-      <section class="bottom-panel" id="bottom-panel" aria-label="Analyse et données">
+      <section class="bottom-panel" id="bottom-panel" aria-label="Analysis and data">
         <div class="panel-resizer" id="panel-resizer" role="separator" aria-orientation="horizontal"
-             aria-label="Redimensionner le panneau" title="Glisser pour redimensionner — double-clic pour réinitialiser"></div>
+             aria-label="Resize the panel" title="Drag to resize — double-click to reset"></div>
         <div class="tab-bar">
-          <div role="tablist" aria-label="Vues du panneau">
+          <div role="tablist" aria-label="Panel views">
             <button class="tab-btn" id="tab-btn-analyse" role="tab" aria-selected="true"
-                    aria-controls="tab-analyse" data-tab="analyse">Analyse</button>
+                    aria-controls="tab-analyse" data-tab="analyse">Analysis</button>
             <button class="tab-btn" id="tab-btn-donnees" role="tab" aria-selected="false"
-                    aria-controls="tab-donnees" data-tab="donnees">Données</button>
+                    aria-controls="tab-donnees" data-tab="donnees">Data</button>
           </div>
           <div class="panel-actions">
-            <button class="icon-btn" id="panel-maximize" aria-label="Agrandir ou réduire le panneau" title="Agrandir / réduire">
+            <button class="icon-btn" id="panel-maximize" aria-label="Maximise or restore the panel" title="Maximise / restore">
               <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M7 14l5-5 5 5"
                 stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
@@ -180,32 +179,32 @@
           <div class="charts-grid">
             <div class="chart-card chart-wide">
               <div class="chart-head">
-                <h3>Mises en service par année</h3>
+                <h3>Commissioning by year</h3>
                 <div class="chart-controls">
-                  <div class="segmented segmented-sm" id="timeline-metric" role="group" aria-label="Métrique">
+                  <div class="segmented segmented-sm" id="timeline-metric" role="group" aria-label="Metric">
                     <button class="seg-btn" data-metric="sites" aria-pressed="true">Sites</button>
-                    <button class="seg-btn" data-metric="capacite" aria-pressed="false">Capacité</button>
+                    <button class="seg-btn" data-metric="capacite" aria-pressed="false">Capacity</button>
                   </div>
-                  <label class="toggle-label"><input type="checkbox" id="timeline-cumul"> Cumul</label>
+                  <label class="toggle-label"><input type="checkbox" id="timeline-cumul"> Cumulative</label>
                 </div>
               </div>
-              <div class="chart-body"><canvas id="chart-timeline" aria-label="Graphique des mises en service par année"></canvas></div>
-              <div class="chart-empty" hidden>Aucune donnée avec ces filtres</div>
+              <div class="chart-body"><canvas id="chart-timeline" aria-label="Commissioning by year chart"></canvas></div>
+              <div class="chart-empty" hidden>No data for these filters</div>
             </div>
             <div class="chart-card">
-              <div class="chart-head"><h3>Sites par type</h3></div>
-              <div class="chart-body"><canvas id="chart-types" aria-label="Graphique de la répartition des sites par type"></canvas></div>
-              <div class="chart-empty" hidden>Aucune donnée avec ces filtres</div>
+              <div class="chart-head"><h3>Sites by type</h3></div>
+              <div class="chart-body"><canvas id="chart-types" aria-label="Sites by type chart"></canvas></div>
+              <div class="chart-empty" hidden>No data for these filters</div>
             </div>
             <div class="chart-card">
-              <div class="chart-head"><h3 id="chart-regions-title">Capacité d'injection par région</h3></div>
-              <div class="chart-body"><canvas id="chart-regions" aria-label="Graphique de la capacité par région"></canvas></div>
-              <div class="chart-empty" hidden>Aucune donnée avec ces filtres</div>
+              <div class="chart-head"><h3 id="chart-regions-title">Injection capacity by Bundesland</h3></div>
+              <div class="chart-body"><canvas id="chart-regions" aria-label="Capacity by Bundesland chart"></canvas></div>
+              <div class="chart-empty" hidden>No data for these filters</div>
             </div>
             <div class="chart-card">
-              <div class="chart-head"><h3>Top 10 départements — nombre de sites</h3></div>
-              <div class="chart-body"><canvas id="chart-departments" aria-label="Graphique des dix premiers départements par nombre de sites"></canvas></div>
-              <div class="chart-empty" hidden>Aucune donnée avec ces filtres</div>
+              <div class="chart-head"><h3>Top 10 districts (Landkreise) — number of sites</h3></div>
+              <div class="chart-body"><canvas id="chart-departments" aria-label="Top ten districts by number of sites chart"></canvas></div>
+              <div class="chart-empty" hidden>No data for these filters</div>
             </div>
           </div>
         </div>
@@ -215,37 +214,37 @@
           <div class="table-toolbar">
             <span id="table-count" aria-live="polite"></span>
             <div class="table-toolbar-right">
-              <label class="page-size-label" for="page-size">Lignes&nbsp;:</label>
+              <label class="page-size-label" for="page-size">Rows&nbsp;:</label>
               <select id="page-size">
                 <option value="25" selected>25</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
               </select>
-              <button class="btn-primary" id="btn-export" title="Exporte le jeu de données filtré">Exporter CSV</button>
+              <button class="btn-primary" id="btn-export" title="Exports the filtered dataset">Export CSV</button>
             </div>
           </div>
           <div class="table-wrapper">
             <table id="data-table">
               <thead>
                 <tr>
-                  <th scope="col" data-sort="nom">Projet</th>
-                  <th scope="col" data-sort="commune">Commune</th>
-                  <th scope="col" data-sort="region">Région</th>
+                  <th scope="col" data-sort="nom">Plant</th>
+                  <th scope="col" data-sort="commune">Municipality</th>
+                  <th scope="col" data-sort="region">Bundesland</th>
                   <th scope="col" data-sort="type">Type</th>
-                  <th scope="col" data-sort="capacite" class="col-num">Capacité (GWh/an)</th>
-                  <th scope="col" data-sort="dateMes">Mise en service</th>
+                  <th scope="col" data-sort="capacite" class="col-num">Capacity (MW)</th>
+                  <th scope="col" data-sort="dateMes">Commissioned</th>
                   <th scope="col" data-sort="echeanceAnnee" class="col-num"
-                      title="Échéance de contrat estimée — injection 15 ans · cogé biogaz 20 ans · gaz naturel C13/C16 12/15 ans">Échéance (est.)</th>
-                  <th scope="col" data-sort="ouvert">Statut</th>
+                      title="Estimated EEG support end — 20 years from commissioning; tender winners +10 years">Support end (est.)</th>
+                  <th scope="col" data-sort="ouvert">Status</th>
                 </tr>
               </thead>
               <tbody id="table-body"></tbody>
             </table>
-            <div class="table-empty" id="table-empty" hidden>Aucun site ne correspond aux filtres.</div>
+            <div class="table-empty" id="table-empty" hidden>No sites match the filters.</div>
           </div>
           <div class="table-footer">
             <span id="table-range"></span>
-            <nav class="pagination" id="pagination" aria-label="Pagination du tableau"></nav>
+            <nav class="pagination" id="pagination" aria-label="Table pagination"></nav>
           </div>
         </div>
       </section>
@@ -264,11 +263,11 @@
   <script src="vendor/chartjs/chart.umd.min.js"></script>
 
   <!-- App -->
-  <script src="js/config.js?v=20260902-1"></script>
-  <script src="js/filters.js?v=20260902-1"></script>
-  <script src="js/map.js?v=20260902-1"></script>
-  <script src="js/charts.js?v=20260902-1"></script>
-  <script src="js/table.js?v=20260902-1"></script>
-  <script src="js/app.js?v=20260902-1"></script>
+  <script src="js/config.js?v=20260902-2"></script>
+  <script src="js/filters.js?v=20260902-2"></script>
+  <script src="js/map.js?v=20260902-2"></script>
+  <script src="js/charts.js?v=20260902-2"></script>
+  <script src="js/table.js?v=20260902-2"></script>
+  <script src="js/app.js?v=20260902-2"></script>
 </body>
 </html>

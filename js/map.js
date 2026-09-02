@@ -44,8 +44,8 @@ const MapView = (() => {
       const div = L.DomUtil.create('div', 'leaflet-bar');
       const a = L.DomUtil.create('a', '', div);
       a.href = '#';
-      a.title = 'Recentrer la carte (Allemagne)';
-      a.setAttribute('aria-label', 'Recentrer la carte (Allemagne)');
+      a.title = 'Recenter map (Germany)';
+      a.setAttribute('aria-label', 'Recenter map (Germany)');
       a.innerHTML = '⌂';
       L.DomEvent.on(a, 'click', (e) => {
         L.DomEvent.preventDefault(e);
@@ -64,7 +64,7 @@ const MapView = (() => {
         const n = cluster.getChildCount();
         const size = n < 10 ? 30 : n < 100 ? 36 : 44;
         return L.divIcon({
-          html: `<div class="cluster-icon">${n.toLocaleString('fr-FR')}</div>`,
+          html: `<div class="cluster-icon">${n.toLocaleString('en-GB')}</div>`,
           className: 'marker-cluster',
           iconSize: [size, size],
         });
@@ -107,24 +107,24 @@ const MapView = (() => {
   }
 
   function popupHtml(d) {
-    const unit = CAP_UNITS[d.base] || 'GWh/an';
+    const unit = CAP_UNITS[d.base] || 'MW';
     const rows = [
       ['Type', d.type],
-      ['Capacité', `${fmtNum(d.capacite, 2)} ${unit}`],
-      ['Mise en service', fmtDate(d.dateMes)],
-      ['Réseau', [d.operateur, d.reseau].filter(Boolean).join(' · ')],
+      ['Capacity', `${fmtNum(d.capacite, 2)} ${unit}`],
+      ['Commissioned', fmtDate(d.dateMes)],
+      ['Technology', d.reseau],
     ];
     if (d.base === 'cogen' && d.puissanceKw)
-      rows.splice(2, 0, ['Puissance', `${fmtNum(d.puissanceKw, 0)} kW`]);
+      rows.splice(2, 0, ['Output', `${fmtNum(d.puissanceKw, 0)} kW`]);
     if (d.base === 'cogen' && d.combustible)
-      rows.splice(1, 0, ['Combustible', d.combustible]);
+      rows.splice(1, 0, ['Fuel', d.combustible]);
     if (d.echeanceAnnee != null)
-      rows.push(['Échéance contrat (est.)', String(d.echeanceAnnee)]);
+      rows.push(['Support end (est.)', String(d.echeanceAnnee)]);
 
     const hypNote = d.echeanceHyp
-      ? `<div class="legend-note">Hypothèse : ${escapeHtml(d.echeanceHyp)}</div>` : '';
+      ? `<div class="legend-note">Assumption: ${escapeHtml(d.echeanceHyp)}</div>` : '';
     const geoNote = d.geoPrecision === 'commune'
-      ? `<div class="legend-note">Position au centre de la commune</div>` : '';
+      ? `<div class="legend-note">Position at municipality centre</div>` : '';
     const gmaps = (d.lat != null && d.lon != null)
       ? `<a class="popup-link" href="https://www.google.com/maps?q=${d.lat},${d.lon}"
            target="_blank" rel="noopener noreferrer">Google Maps ↗</a>` : '';
@@ -136,7 +136,7 @@ const MapView = (() => {
         ${rows.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHtml(String(v || '—'))}</dd>`).join('')}
       </dl>
       <div class="popup-foot">
-        <span class="status-tag ${d.ouvert ? 'open' : 'closed'}">${d.ouvert ? 'Ouvert' : 'Fermé'}</span>
+        <span class="status-tag ${d.ouvert ? 'open' : 'closed'}">${d.ouvert ? 'Operating' : 'Closed'}</span>
         ${gmaps}
       </div>
       ${hypNote}${geoNote}`;
@@ -200,22 +200,22 @@ const MapView = (() => {
     legendDiv.classList.toggle('collapsed', legendCollapsed);
     legendDiv.innerHTML = `
       <button class="map-legend-toggle" aria-expanded="${!legendCollapsed}"
-              aria-label="Afficher ou masquer la légende">
-        <span class="map-legend-title">Types de site</span>
+              aria-label="Show or hide the legend">
+        <span class="map-legend-title">Site types</span>
         <span class="chevron" aria-hidden="true">▼</span>
       </button>
       <div class="map-legend-body">
       ${types.map(t => {
-        const diamond = t.startsWith('Cogénération') ? ' diamond' : '';
+        const diamond = ['Biogas', 'Biomethan (Bioerdgas)', 'Klärgas', 'Deponiegas'].includes(t) ? ' diamond' : '';
         return `<div class="legend-item" data-type="${escapeHtml(t)}" role="button" tabindex="0"
-             title="Cliquer pour masquer / afficher ce type">
+             title="Click to show / hide this type">
           <span class="type-dot${diamond}" style="background:${typeColor(t)}"></span>
           <span class="type-name">${escapeHtml(t)}</span>
-          <span class="type-count">${counts[t].toLocaleString('fr-FR')}</span>
+          <span class="type-count">${counts[t].toLocaleString('en-GB')}</span>
         </div>`;
       }).join('')}
-      ${hasCogen && hasCommune ? '<div class="legend-note">◆ cogénérations — position à la commune</div>' : ''}
-      <div class="legend-note">Taille du point ∝ capacité</div>
+      ${hasCogen && hasCommune ? '<div class="legend-note">◆ CHP — position at municipality level</div>' : ''}
+      <div class="legend-note">Dot size ∝ capacity</div>
       </div>`;
 
     legendDiv.querySelector('.map-legend-toggle').addEventListener('click', () => {

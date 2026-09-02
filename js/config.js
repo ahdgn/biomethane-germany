@@ -44,13 +44,13 @@ const CONFIG = (() => {
     {
       id: 'injection',
       label: 'Injection',
-      labelLong: 'Unités de production de gaz (Einspeisung)',
+      labelLong: 'Gas production units (injection)',
       url: 'data/einspeisung.json',
       marker: 'circle',
       normalize: (d, i) => ({
         id: 'inj-' + (d.id != null ? d.id : i),
         base: 'injection',
-        nom: d.nom || 'Ohne Namen',
+        nom: d.nom || 'Unnamed',
         commune: d.gem || d.ort || '',
         departement: '',
         region: d.bl || '',
@@ -58,8 +58,9 @@ const CONFIG = (() => {
         capacite: d.kw ? d.kw / 1000 : 0, // MW
         annee: d.annee || null,
         dateMes: d.dateMes || null,
-        operateur: d.op || '',
-        reseau: '',
+        operateur: '',
+        opId: d.op || '',
+        reseau: d.tech || '',
         ouvert: d.statut === 'In Betrieb',
         lat: d.lat,
         lon: d.lon,
@@ -68,14 +69,14 @@ const CONFIG = (() => {
     },
     {
       id: 'cogen',
-      label: 'BHKW',
-      labelLong: 'BHKW biogaz (cibles de conversion)',
+      label: 'CHP',
+      labelLong: 'Biogas CHP (conversion targets)',
       url: 'data/chp-anlagen.json',
       marker: 'diamond',
       normalize: (d, i) => ({
         id: 'chp-' + (d.id != null ? d.id : i),
         base: 'cogen',
-        nom: d.nom || 'Ohne Namen',
+        nom: d.nom || 'Unnamed',
         commune: d.gem || d.ort || '',
         departement: d.lk || '',
         region: d.bl || '',
@@ -84,7 +85,8 @@ const CONFIG = (() => {
         capacite: d.kw ? d.kw / 1000 : 0, // MW électriques
         annee: d.annee || null,
         dateMes: d.dateMes || null,
-        operateur: d.op || '',
+        operateur: d.lk || '',
+        opId: d.op || '',
         reseau: d.tech || '',
         ouvert: true, // le jeu ne contient que les unités « In Betrieb »
         lat: d.lat,
@@ -100,7 +102,7 @@ const CONFIG = (() => {
   ];
 
   // Unités de capacité par base
-  const CAP_UNITS = { injection: 'MW', cogen: 'MW él' };
+  const CAP_UNITS = { injection: 'MW', cogen: 'MW el' };
 
   /* ---- Plancher de l'axe temps ----
      Premières unités biogaz dans les années 1990 ; tout ce qui précède
@@ -108,13 +110,13 @@ const CONFIG = (() => {
   const YEAR_FLOOR = 2000;
   const YEAR_FLOOR_LABEL = '< ' + YEAR_FLOOR;
 
-  const SOURCE_NOTE = 'Marktstammdatenregister (BNetzA), extrait du 02/09/2026 — via open-mastr';
+  const SOURCE_NOTE = 'Marktstammdatenregister (BNetzA), extract of 02/09/2026 — via open-mastr';
 
   // ---- Formats (UI française, données allemandes) ----
-  const fmtInt = (n) => (n == null ? '—' : Math.round(n).toLocaleString('fr-FR'));
+  const fmtInt = (n) => (n == null ? '—' : Math.round(n).toLocaleString('en-GB'));
   const fmtNum = (n, dec = 1) =>
-    n == null ? '—' : n.toLocaleString('fr-FR', { maximumFractionDigits: dec });
-  const dateFmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+    n == null ? '—' : n.toLocaleString('en-GB', { maximumFractionDigits: dec });
+  const dateFmt = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const fmtDate = (iso) => {
     if (!iso) return '—';
     const t = Date.parse(iso.length === 10 ? iso + 'T00:00:00' : iso);
@@ -135,9 +137,9 @@ const CONFIG = (() => {
   function echeance(d) {
     if (d.base !== 'cogen' || !d.annee) return { annee: null, hyp: null };
     if (d.zuschlag) {
-      return { annee: d.annee + 20, hyp: 'EEG — 20 ans ; Anschlussförderung déjà obtenue (+10 ans, appel d\'offres)' };
+      return { annee: d.annee + 20, hyp: 'EEG — 20 years; follow-up support already secured (+10 years, tender award)' };
     }
-    return { annee: d.annee + 20, hyp: 'EEG — 20 ans à partir de la MES (§25 EEG)' };
+    return { annee: d.annee + 20, hyp: 'EEG — 20 years from commissioning (Sec. 25 EEG)' };
   }
 
   /* ---- Filtre prospection 1 (Allemagne) ----

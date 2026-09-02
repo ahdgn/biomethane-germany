@@ -30,11 +30,11 @@ const DataTable = (() => {
 
     // unités hétérogènes entre bases -> astérisque + note de bas de tableau
     const capTh = document.querySelector('#data-table th[data-sort="capacite"]');
-    capTh.textContent = 'Capacité*';
-    capTh.title = 'Injection : GWh PCS/an · Cogénération : GWh électriques/an';
+    capTh.textContent = 'Capacity*';
+    capTh.title = 'Injection: MW gas · CHP: MW electric';
     const note = document.createElement('span');
     note.className = 'table-note';
-    note.textContent = '* injection : GWh/an · cogé : GWh él/an';
+    note.textContent = '* injection: MW gas · CHP: MW el';
     document.getElementById('table-range').after(note);
   }
 
@@ -79,9 +79,9 @@ const DataTable = (() => {
     const pageData = sorted.slice(start, start + pageSize);
 
     document.getElementById('table-count').innerHTML =
-      `<strong>${total.toLocaleString('fr-FR')}</strong> site${total > 1 ? 's' : ''}`;
+      `<strong>${total.toLocaleString('en-GB')}</strong> site${total > 1 ? 's' : ''}`;
     document.getElementById('table-range').textContent = total === 0 ? '' :
-      `${(start + 1).toLocaleString('fr-FR')}–${Math.min(start + pageSize, total).toLocaleString('fr-FR')} sur ${total.toLocaleString('fr-FR')}`;
+      `${(start + 1).toLocaleString('en-GB')}–${Math.min(start + pageSize, total).toLocaleString('en-GB')} of ${total.toLocaleString('en-GB')}`;
     document.getElementById('table-empty').hidden = total > 0;
 
     const tbody = document.getElementById('table-body');
@@ -90,11 +90,11 @@ const DataTable = (() => {
     pageData.forEach(d => {
       const tr = document.createElement('tr');
       tr.dataset.id = d.id;
-      tr.title = 'Cliquer pour localiser sur la carte';
+      tr.title = 'Click to locate on the map';
 
       const unit = CAP_UNITS[d.base] || '';
       const baseCell = hasCogen
-        ? `<td>${d.base === 'cogen' ? 'Cogé' : 'Injection'}</td>` : '';
+        ? `<td>${d.base === 'cogen' ? 'CHP' : 'Injection'}</td>` : '';
 
       tr.innerHTML = `
         ${baseCell}
@@ -107,8 +107,8 @@ const DataTable = (() => {
         </span></td>
         <td class="col-num" title="${unit}">${fmtNum(d.capacite, 2)}</td>
         <td>${fmtDate(d.dateMes)}</td>
-        <td class="col-num" title="${escapeHtml(d.echeanceHyp || 'estimation non disponible')}">${d.echeanceAnnee != null ? d.echeanceAnnee : '—'}</td>
-        <td><span class="status-tag ${d.ouvert ? 'open' : 'closed'}">${d.ouvert ? 'Ouvert' : 'Fermé'}</span></td>
+        <td class="col-num" title="${escapeHtml(d.echeanceHyp || 'no estimate available')}">${d.echeanceAnnee != null ? d.echeanceAnnee : '—'}</td>
+        <td><span class="status-tag ${d.ouvert ? 'open' : 'closed'}">${d.ouvert ? 'Operating' : 'Closed'}</span></td>
       `;
 
       tr.addEventListener('click', () => {
@@ -134,7 +134,7 @@ const DataTable = (() => {
       let cmp;
       if (typeof va === 'number' && typeof vb === 'number') cmp = va - vb;
       else if (typeof va === 'boolean' && typeof vb === 'boolean') cmp = va - vb;
-      else cmp = String(va).localeCompare(String(vb), 'fr', { sensitivity: 'base' });
+      else cmp = String(va).localeCompare(String(vb), 'de', { sensitivity: 'base' });
       return sortDir === 'asc' ? cmp : -cmp;
     });
   }
@@ -167,7 +167,7 @@ const DataTable = (() => {
       return btn;
     };
 
-    mk('‹', currentPage - 1, { disabled: currentPage === 1, aria: 'Page précédente' });
+    mk('‹', currentPage - 1, { disabled: currentPage === 1, aria: 'Previous page' });
 
     const maxVisible = 7;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
@@ -184,27 +184,27 @@ const DataTable = (() => {
       mk(String(totalPages), totalPages, { current: currentPage === totalPages });
     }
 
-    mk('›', currentPage + 1, { disabled: currentPage === totalPages, aria: 'Page suivante' });
+    mk('›', currentPage + 1, { disabled: currentPage === totalPages, aria: 'Next page' });
   }
 
   function exportCSV() {
     if (currentData.length === 0) return;
 
-    const headers = ['Base', 'Projet', 'Commune', 'Département', 'Région', 'Type',
-      'Capacité (GWh/an)', 'Unité capacité', 'Mise en service',
-      'Échéance contrat estimée', 'Hypothèse durée contrat', 'Opérateur', 'Réseau / technologie',
-      'Statut', 'Latitude', 'Longitude', 'Précision géo', 'Lien Google Maps'];
+    const headers = ['Base', 'Plant', 'Municipality', 'District (Landkreis)', 'Bundesland', 'Type',
+      'Capacity', 'Capacity unit', 'Commissioned',
+      'Support end (est.)', 'Support end assumption', 'Operator (MaStR-Nr)', 'Technology',
+      'Status', 'Latitude', 'Longitude', 'Geo precision', 'Google Maps link'];
 
     const rows = currentData.map(d => [
-      d.base === 'cogen' ? 'Cogénération' : 'Injection',
+      d.base === 'cogen' ? 'CHP' : 'Injection',
       d.nom, d.commune, d.departement, d.region, d.type,
       d.capacite != null ? String(d.capacite).replace('.', ',') : '',
       CAP_UNITS[d.base] || '',
       d.dateMes || '',
       d.echeanceAnnee != null ? d.echeanceAnnee : '',
       d.echeanceHyp || '',
-      d.operateur, d.reseau,
-      d.ouvert ? 'Ouvert' : 'Fermé',
+      d.opId || '', d.reseau,
+      d.ouvert ? 'Operating' : 'Closed',
       d.lat != null ? String(d.lat).replace('.', ',') : '',
       d.lon != null ? String(d.lon).replace('.', ',') : '',
       d.geoPrecision || '',
@@ -220,7 +220,7 @@ const DataTable = (() => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `biomethane-france-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `biomethan-deutschland-export-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }

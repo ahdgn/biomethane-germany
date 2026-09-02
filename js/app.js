@@ -10,8 +10,8 @@
   const overlay = document.createElement('div');
   overlay.className = 'loading-overlay';
   overlay.innerHTML = `
-    <div class="loading-spinner" role="status" aria-label="Chargement"></div>
-    <div class="loading-text">Chargement des données…</div>`;
+    <div class="loading-spinner" role="status" aria-label="Loading"></div>
+    <div class="loading-text">Loading data…</div>`;
   document.body.appendChild(overlay);
 
   try {
@@ -57,11 +57,11 @@
 
     /* ---- Header / footer ---- */
     document.getElementById('header-meta').textContent =
-      loaded.map(r => `${fmtInt(r.records.length)} ${r.ds.label.toLowerCase() === 'injection'
-        ? 'points d\'injection' : r.ds.label.toLowerCase()}`).join(' · ');
-    document.getElementById('footer-source').textContent = `Sources : ${SOURCE_NOTE}`;
+      loaded.map(r => `${fmtInt(r.records.length)} ${r.ds.id === 'injection'
+        ? 'injection units' : 'CHP sites'}`).join(' · ');
+    document.getElementById('footer-source').textContent = `Sources: ${SOURCE_NOTE}`;
     document.getElementById('footer-rights').textContent =
-      `© ${new Date().getFullYear()} Nautilus — Tous droits réservés`;
+      `© ${new Date().getFullYear()} Nautilus — All rights reserved`;
 
     /* ---- Sidebar ---- */
     const sidebar = document.getElementById('sidebar');
@@ -182,9 +182,9 @@
   } catch (error) {
     overlay.innerHTML = `
       <div class="loading-error">
-        <div>Erreur de chargement des données</div>
+        <div>Data loading error</div>
         <small>${CONFIG.escapeHtml(error.message)}</small>
-        <small>Lancez l'application via un serveur HTTP local (ex. <code>python -m http.server</code>).</small>
+        <small>Run the app from a local HTTP server (e.g. <code>python -m http.server</code>).</small>
       </div>`;
     console.error('Erreur d\'initialisation :', error);
   }

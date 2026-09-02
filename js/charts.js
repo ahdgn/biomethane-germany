@@ -55,7 +55,7 @@ const Charts = (() => {
             ...baseOptions().plugins.tooltip,
             callbacks: {
               label: (ctx) => ` ${ctx.dataset.label} : ${
-                timelineOpts.metric === 'sites' ? fmtInt(ctx.parsed.y) : fmtNum(ctx.parsed.y, 1) + ' GWh/an'}`,
+                timelineOpts.metric === 'sites' ? fmtInt(ctx.parsed.y) : fmtNum(ctx.parsed.y, 1) + ' MW'}`,
             },
           },
         },
@@ -65,7 +65,7 @@ const Charts = (() => {
             stacked: true,
             beginAtZero: true,
             grid: { color: GRID },
-            ticks: { callback: (v) => v.toLocaleString('fr-FR') },
+            ticks: { callback: (v) => v.toLocaleString('en-GB') },
             title: { display: true, text: 'Sites', font: { size: 11 } },
           },
         },
@@ -75,7 +75,7 @@ const Charts = (() => {
     chartTypes = new Chart(document.getElementById('chart-types'), {
       type: 'bar',
       data: { labels: [], datasets: [] },
-      options: horizontalBarOptions('Nombre de sites', (ctx) => {
+      options: horizontalBarOptions('Number of sites', (ctx) => {
         const total = lastData.length || 1;
         const pct = (ctx.parsed.x / total * 100);
         return ` ${fmtInt(ctx.parsed.x)} site${ctx.parsed.x > 1 ? 's' : ''} (${fmtNum(pct, 1)} %)`;
@@ -85,13 +85,13 @@ const Charts = (() => {
     chartRegions = new Chart(document.getElementById('chart-regions'), {
       type: 'bar',
       data: { labels: [], datasets: [] },
-      options: horizontalBarOptions('GWh/an', (ctx) => ` ${fmtNum(ctx.parsed.x, 1)} GWh/an`),
+      options: horizontalBarOptions('MW', (ctx) => ` ${fmtNum(ctx.parsed.x, 1)} MW`),
     });
 
     chartDepartments = new Chart(document.getElementById('chart-departments'), {
       type: 'bar',
       data: { labels: [], datasets: [] },
-      options: horizontalBarOptions('Nombre de sites', (ctx) => ` ${fmtInt(ctx.parsed.x)} sites`),
+      options: horizontalBarOptions('Number of sites', (ctx) => ` ${fmtInt(ctx.parsed.x)} sites`),
     });
 
     bindControls();
@@ -110,7 +110,7 @@ const Charts = (() => {
         x: {
           beginAtZero: true,
           grid: { color: GRID },
-          ticks: { callback: (v) => v.toLocaleString('fr-FR') },
+          ticks: { callback: (v) => v.toLocaleString('en-GB') },
           title: { display: true, text: xTitle, font: { size: 11 } },
         },
         y: {
@@ -175,7 +175,7 @@ const Charts = (() => {
 
     const BASE_STYLE = {
       injection: { label: 'Injection', color: PALETTE.teal },
-      cogen: { label: 'Cogénérations', color: PALETTE.navy },
+      cogen: { label: 'CHP', color: PALETTE.navy },
     };
 
     const datasets = bases.map(base => {
@@ -197,8 +197,8 @@ const Charts = (() => {
 
     const isCap = timelineOpts.metric === 'capacite';
     chartTimeline.options.scales.y.title.text = isCap
-      ? (timelineOpts.cumul ? 'GWh/an (cumul)' : 'GWh/an mis en service')
-      : (timelineOpts.cumul ? 'Sites (cumul)' : 'Sites mis en service');
+      ? (timelineOpts.cumul ? 'MW (cumulative)' : 'MW commissioned')
+      : (timelineOpts.cumul ? 'Sites (cumulative)' : 'Sites commissioned');
     chartTimeline.options.plugins.legend.display = datasets.length > 1;
     chartTimeline.data.labels = labels;
     chartTimeline.data.datasets = datasets;
@@ -229,14 +229,14 @@ const Charts = (() => {
     const source = onlyCogen ? data : inj;
     const title = document.getElementById('chart-regions-title');
     title.textContent = onlyCogen
-      ? 'Énergie électrique injectée par région (cogé)'
-      : 'Capacité d\'injection par région';
+      ? 'CHP capacity by Bundesland'
+      : 'Injection capacity by Bundesland';
     chartRegions.options.scales.x.title.text = onlyCogen ? CAP_UNITS.cogen : CAP_UNITS.injection;
 
     setEmpty('chart-regions', source.length === 0);
     const byRegion = {};
     source.forEach(d => {
-      const r = d.region || 'Inconnue';
+      const r = d.region || 'Unknown';
       byRegion[r] = (byRegion[r] || 0) + (d.capacite || 0);
     });
     const sorted = Object.entries(byRegion).sort((a, b) => b[1] - a[1]);
@@ -256,7 +256,7 @@ const Charts = (() => {
     setEmpty('chart-departments', data.length === 0);
     const byDept = {};
     data.forEach(d => {
-      const dept = d.departement || 'Inconnu';
+      const dept = d.departement || 'Unknown';
       byDept[dept] = (byDept[dept] || 0) + 1;
     });
     const sorted = Object.entries(byDept).sort((a, b) => b[1] - a[1]).slice(0, 10);

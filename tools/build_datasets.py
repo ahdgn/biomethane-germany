@@ -43,7 +43,7 @@ def main():
         annee = g["annee"].min()
         sites.append({
             "id": sid,
-            "nom": clean(top["NameStromerzeugungseinheit"]) or "Ohne Namen",
+            "nom": clean(top["NameStromerzeugungseinheit"]) or "Unnamed",
             "op": clean(top["AnlagenbetreiberMastrNummer"]),
             "bl": clean(top["Bundesland"]),
             "lk": clean(top["Landkreis"]),
@@ -78,7 +78,7 @@ def main():
     for _, u in gp.iterrows():
         out.append({
             "id": clean(u["EinheitMastrNummer"]),
-            "nom": clean(u["NameGaserzeugungseinheit"]) or "Ohne Namen",
+            "nom": clean(u["NameGaserzeugungseinheit"]) or "Unnamed",
             "op": clean(u["AnlagenbetreiberMastrNummer"]),
             "bl": clean(u["Bundesland"]),
             "gem": clean(u["Gemeinde"]),
