@@ -1,6 +1,6 @@
 /* ============================================
-   Config — source unique de vérité
-   (palette, couleurs par type, formats, données)
+   Config — source unique de vérité (Allemagne)
+   Données : Marktstammdatenregister (BNetzA), extrait 02/09/2026
    ============================================ */
 
 const CONFIG = (() => {
@@ -22,97 +22,95 @@ const CONFIG = (() => {
     hairline: '#D5DCE4',
   };
 
-  // Couleur par type de site — utilisée PARTOUT :
-  // marqueurs carte, légende carte, graphiques, badges tableau.
+  // Couleur par type — BHKW par combustible, injection par technologie.
   const TYPE_COLORS = {
-    'Agricole autonome': PALETTE.teal,
-    'Agricole territorial': PALETTE.sage,
-    'Industriel territorial': PALETTE.steel,
-    'Station d\'épuration': PALETTE.violet,
-    'Déchets ménagers et biodéchets': PALETTE.terracotta,
-    'ISDND': PALETTE.gold,
-    'Power-to-méthane': PALETTE.amber,
-    'Cogénération — Bioénergies': PALETTE.navy,
-    'Cogénération — Autres filières': PALETTE.grey,
+    'Biogas': PALETTE.teal,
+    'Biomethan (Bioerdgas)': PALETTE.steel,
+    'Klärgas': PALETTE.violet,
+    'Deponiegas': PALETTE.gold,
+    'Biomethan-Erzeugung': PALETTE.sage,
+    'Power-to-Gas (Wasserstoff)': PALETTE.amber,
+    'Power-to-Gas (Methan)': PALETTE.terracotta,
+    'Förderung fossilen Erdgases': PALETTE.grey,
+    'Liquefied Natural Gas': PALETTE.grey,
+    'Sonstige': PALETTE.grey,
   };
   const TYPE_FALLBACK = PALETTE.grey;
 
-  // Jeux de données. Le dashboard s'adapte : la base cogé est
-  // activée simplement en la déclarant ici.
+  /* Jeux de données. Les ids 'injection' et 'cogen' sont structurels
+     (utilisés par app/map/charts/filters) : injection = unités de
+     production de gaz (Einspeisung), cogen = BHKW biogaz (cibles). */
   const DATASETS = [
     {
       id: 'injection',
       label: 'Injection',
-      labelLong: 'Points d\'injection biométhane',
-      url: 'data/points-injection.json',
+      labelLong: 'Unités de production de gaz (Einspeisung)',
+      url: 'data/einspeisung.json',
       marker: 'circle',
       normalize: (d, i) => ({
-        id: 'inj-' + (d.id_unique_projet != null ? d.id_unique_projet : i),
+        id: 'inj-' + (d.id != null ? d.id : i),
         base: 'injection',
-        nom: d.nom_du_projet || 'Sans nom',
-        commune: d.commune || '',
-        departement: d.departement || '',
-        region: d.region || '',
-        type: d.site || 'Inconnu',
-        capacite: d.capacite_de_production_gwh_an || 0, // GWh PCS/an
-        annee: d.annee_mes || null,
-        dateMes: d.date_de_mes || null,
-        operateur: d.grx_demandeur || '',
-        reseau: d.type_de_reseau || '',
-        ouvert: d.site_ouvert === 'True',
-        lat: d.coordonnees ? d.coordonnees.lat : null,
-        lon: d.coordonnees ? d.coordonnees.lon : null,
-        geoPrecision: 'site',
+        nom: d.nom || 'Ohne Namen',
+        commune: d.gem || d.ort || '',
+        departement: '',
+        region: d.bl || '',
+        type: d.tech || 'Sonstige',
+        capacite: d.kw ? d.kw / 1000 : 0, // MW
+        annee: d.annee || null,
+        dateMes: d.dateMes || null,
+        operateur: d.op || '',
+        reseau: '',
+        ouvert: d.statut === 'In Betrieb',
+        lat: d.lat,
+        lon: d.lon,
+        geoPrecision: d.lat != null ? 'site' : 'commune',
       }),
     },
     {
       id: 'cogen',
-      label: 'Cogénérations',
-      labelLong: 'Cogénérations (cibles de conversion)',
-      url: 'data/cogenerations.json',
+      label: 'BHKW',
+      labelLong: 'BHKW biogaz (cibles de conversion)',
+      url: 'data/chp-anlagen.json',
       marker: 'diamond',
-      optional: true, // absent tant que l'ETL n'a pas tourné
       normalize: (d, i) => ({
-        id: 'cog-' + i,
+        id: 'chp-' + (d.id != null ? d.id : i),
         base: 'cogen',
-        nom: d.nom || 'Confidentiel',
-        commune: d.commune || '',
-        departement: d.departement || '',
-        region: d.region || '',
-        type: d.filiere === 'Bioénergies'
-          ? 'Cogénération — Bioénergies'
-          : 'Cogénération — Autres filières',
-        filiere: d.filiere || '',
-        capacite: d.energie_gwh_an || 0, // GWh électriques/an
-        annee: d.annee_mes || null,
-        dateMes: d.date_mes || null,
-        operateur: d.gestionnaire || '',
-        reseau: d.technologie || '',
-        ouvert: d.statut === 'En service',
+        nom: d.nom || 'Ohne Namen',
+        commune: d.gem || d.ort || '',
+        departement: d.lk || '',
+        region: d.bl || '',
+        type: d.fuel || 'Sonstige',
+        filiere: d.fuel || '',
+        capacite: d.kw ? d.kw / 1000 : 0, // MW électriques
+        annee: d.annee || null,
+        dateMes: d.dateMes || null,
+        operateur: d.op || '',
+        reseau: d.tech || '',
+        ouvert: true, // le jeu ne contient que les unités « In Betrieb »
         lat: d.lat,
         lon: d.lon,
-        geoPrecision: d.geo_precision || 'commune',
-        puissanceKw: d.puissance_kw || null,
-        combustible: d.combustible || '',
+        geoPrecision: d.lat != null ? 'site' : 'commune',
+        puissanceKw: d.kw || null,
+        combustible: '',
+        nUnites: d.n || 1,
+        flex: !!d.flex,       // Flexiprämie revendiquée
+        zuschlag: !!d.zus,    // Anschlussförderung déjà obtenue (appel d'offres)
       }),
     },
   ];
 
-  // Unité de capacité par base (les GWh injection ≠ GWh électriques)
-  const CAP_UNITS = { injection: 'GWh/an', cogen: 'GWh él/an' };
+  // Unités de capacité par base
+  const CAP_UNITS = { injection: 'MW', cogen: 'MW él' };
 
   /* ---- Plancher de l'axe temps ----
-     Le registre EDF OA remonte à 1939 (vieilles centrales thermiques à
-     vapeur : 57 des 63 cogés d'avant 2000 sont en gaz ou fioul). Ces MES
-     sont réelles, mais étaler l'axe sur 88 ans écrase la zone utile
-     (2011-2026). Tout ce qui précède est donc agrégé sous « < 2000 »,
-     dans le graphe comme dans le curseur de période. */
+     Premières unités biogaz dans les années 1990 ; tout ce qui précède
+     2000 est agrégé sous « < 2000 ». */
   const YEAR_FLOOR = 2000;
   const YEAR_FLOOR_LABEL = '< ' + YEAR_FLOOR;
 
-  const SOURCE_NOTE = 'Registre ODRÉ (biométhane, 01/01/2025) · Registre EDF OA (cogénérations)';
+  const SOURCE_NOTE = 'Marktstammdatenregister (BNetzA), extrait du 02/09/2026 — via open-mastr';
 
-  // ---- Formats français ----
+  // ---- Formats (UI française, données allemandes) ----
   const fmtInt = (n) => (n == null ? '—' : Math.round(n).toLocaleString('fr-FR'));
   const fmtNum = (n, dec = 1) =>
     n == null ? '—' : n.toLocaleString('fr-FR', { maximumFractionDigits: dec });
@@ -128,50 +126,32 @@ const CONFIG = (() => {
 
   const typeColor = (type) => TYPE_COLORS[type] || TYPE_FALLBACK;
 
-  /* ---- Échéance de contrat estimée ----
-     Durées vérifiées (Run 1, 27/07/2026) :
-     · Injection : tarif OA 15 ans (arrêté du 13/12/2021 et prédécesseurs).
-     · Cogé biogaz (Bioénergies) : 20 ans — BG16 (arrêté du 13/12/2016, abrogé
-       par l'arrêté du 08/09/2025) ; BG11/BG06 prolongés de 15 à 20 ans par
-       l'arrêté du 24/02/2017.
-     · Cogé gaz naturel (Thermique non renouvelable) : C13 = 12 ans (CODOA
-       avant le 28/05/2016), C16 = 15 ans (2016 → abrogation 21/02/2021).
-     Rattachement C13/C16 par année de MES (heuristique, à confirmer site
-     par site) ; pas d'hypothèse pour les autres cas. */
+  /* ---- Échéance de soutien ----
+     BHKW : la rémunération EEG court 20 années civiles à partir de la MES
+     (règle dure, §25 EEG). L'Anschlussförderung (appel d'offres Biomasse)
+     ajoute 10 ans pour les lauréats — signalée via le flag zuschlag.
+     Injection : pas de tarif d'achat en Allemagne (THG-Quote / RED III,
+     contrats bilatéraux) → pas d'échéance. */
   function echeance(d) {
-    if (!d.annee) return { annee: null, hyp: null };
-    if (d.base === 'injection') {
-      return { annee: d.annee + 15, hyp: 'tarif OA injection — 15 ans' };
+    if (d.base !== 'cogen' || !d.annee) return { annee: null, hyp: null };
+    if (d.zuschlag) {
+      return { annee: d.annee + 20, hyp: 'EEG — 20 ans ; Anschlussförderung déjà obtenue (+10 ans, appel d\'offres)' };
     }
-    if (d.type === 'Cogénération — Bioénergies') {
-      return { annee: d.annee + 20, hyp: 'contrat biogaz BG — 20 ans (BG16 ; BG11/BG06 prolongés, arrêté du 24/02/2017)' };
-    }
-    if ((d.filiere || '') === 'Thermique non renouvelable') {
-      if (d.annee <= 2016) return { annee: d.annee + 12, hyp: 'contrat C13 — 12 ans (gaz naturel, à confirmer)' };
-      if (d.annee <= 2021) return { annee: d.annee + 15, hyp: 'contrat C16 — 15 ans (gaz naturel, à confirmer)' };
-    }
-    return { annee: null, hyp: null };
+    return { annee: d.annee + 20, hyp: 'EEG — 20 ans à partir de la MES (§25 EEG)' };
   }
 
-  /* ---- Filtre prospection 1 ----
-     Périmètre thèse (CR weekly 12/06/2026 + stratégie d'entrée v2) :
-     · Injection : types agricoles + industriel territorial, site ouvert,
-       capacité 5-25 GWh/an (cible brownfield ; < 25 GWh = guichet ouvert).
-     · Cogé : filière Bioénergies, en service, >= 1 GWh él/an (exclusion
-       micro-unités), combustible non renseigné = méthanisation (un
-       combustible spécifié — bois, déchets ménagers/industriels,
-       papeterie, biogaz de STEP — est hors cible de conversion). */
-  const PROSPECTION1_TYPES_INJ = ['Agricole autonome', 'Agricole territorial', 'Industriel territorial'];
+  /* ---- Filtre prospection 1 (Allemagne) ----
+     PLACEHOLDER en attente de l'atelier de screening — paramètres
+     par défaut de tools/screening_params.example.json :
+     · BHKW au biogaz, 75 kW – 1,5 MW él ;
+     · fin de l'EEG entre 2026 et 2032 ;
+     · exclusion des lauréats d'appel d'offres (déjà sécurisés). */
   function prospection1(d) {
-    if (d.base === 'injection') {
-      return PROSPECTION1_TYPES_INJ.includes(d.type)
-        && d.ouvert && d.capacite >= 5 && d.capacite <= 25;
-    }
-    if (d.base === 'cogen') {
-      return d.type === 'Cogénération — Bioénergies'
-        && d.ouvert && d.capacite >= 1 && !d.combustible;
-    }
-    return false;
+    if (d.base !== 'cogen') return false;
+    if (d.type !== 'Biogas' || !d.ouvert || !d.annee) return false;
+    const fin = d.annee + 20;
+    return d.capacite >= 0.075 && d.capacite <= 1.5
+      && fin >= 2026 && fin <= 2032 && !d.zuschlag;
   }
 
   return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, DATASETS, CAP_UNITS, SOURCE_NOTE,

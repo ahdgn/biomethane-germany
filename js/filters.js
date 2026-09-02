@@ -366,7 +366,7 @@ const Filters = (() => {
       cards.push(kpi('Sites ouverts', fmtInt(open)));
     }
     cards.push(kpi('Régions couvertes',
-      `${regions.size} <span class="kpi-sub">/ 13</span>`));
+      `${regions.size} <span class="kpi-sub">/ 16</span>`));
 
     strip.innerHTML = cards.join('');
   }

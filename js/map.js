@@ -7,7 +7,7 @@
 const MapView = (() => {
   const { PALETTE, fmtNum, fmtDate, escapeHtml, typeColor, CAP_UNITS } = CONFIG;
 
-  const FRANCE_BOUNDS = L.latLngBounds([41.2, -5.5], [51.3, 9.8]);
+  const FRANCE_BOUNDS = L.latLngBounds([47.2, 5.8], [55.1, 15.1]);
 
   let map;
   let clusterGroup;
@@ -42,8 +42,8 @@ const MapView = (() => {
       const div = L.DomUtil.create('div', 'leaflet-bar');
       const a = L.DomUtil.create('a', '', div);
       a.href = '#';
-      a.title = 'Recentrer sur la France';
-      a.setAttribute('aria-label', 'Recentrer sur la France');
+      a.title = 'Recentrer la carte (Allemagne)';
+      a.setAttribute('aria-label', 'Recentrer la carte (Allemagne)');
       a.innerHTML = '⌂';
       L.DomEvent.on(a, 'click', (e) => {
         L.DomEvent.preventDefault(e);
