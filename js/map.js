@@ -96,10 +96,14 @@ const MapView = (() => {
     const shape = isCogen
       ? `border-radius: 3px; transform: rotate(45deg);`
       : `border-radius: 50%;`;
+    // sites du registre pipeline ACR : halo ambre pour les repérer d'un coup d'œil
+    const ring = d.pipeline
+      ? `border:2.5px solid ${PALETTE.amber};box-shadow:0 0 0 2px rgba(251,174,64,0.35);`
+      : `border:1.5px solid #fff;box-shadow:0 1px 3px rgba(30,66,96,0.4);`;
     return L.divIcon({
       className: 'site-marker',
       html: `<div style="width:${size}px;height:${size}px;background:${color};${shape}
-        border:1.5px solid #fff;box-shadow:0 1px 3px rgba(30,66,96,0.4);
+        ${ring}
         ${d.ouvert ? '' : 'opacity:0.45;'}"></div>`,
       iconSize: [size, size],
       iconAnchor: [r, r],
@@ -121,11 +125,15 @@ const MapView = (() => {
       rows.splice(1, 0, ['Fuel', d.combustible]);
     if (d.echeanceAnnee != null)
       rows.push(['Support end (est.)', String(d.echeanceAnnee)]);
+    if (d.pipeline)
+      rows.push(['ACR pipeline', `${d.pipeline.project} — ${d.pipeline.status} (${d.pipeline.confidence})`]);
 
     const hypNote = d.echeanceHyp
       ? `<div class="legend-note">Assumption: ${escapeHtml(d.echeanceHyp)}</div>` : '';
     const geoNote = d.geoPrecision === 'commune'
       ? `<div class="legend-note">Position at municipality centre</div>` : '';
+    const plNote = d.pipeline && d.pipeline.note
+      ? `<div class="legend-note">${escapeHtml(d.pipeline.note)}</div>` : '';
     const gmaps = (d.lat != null && d.lon != null)
       ? `<a class="popup-link" href="https://www.google.com/maps?q=${d.lat},${d.lon}"
            target="_blank" rel="noopener noreferrer">Google Maps ↗</a>` : '';
@@ -140,7 +148,7 @@ const MapView = (() => {
         <span class="status-tag ${d.ouvert ? 'open' : 'closed'}">${d.ouvert ? 'Operating' : 'Closed'}</span>
         ${gmaps}
       </div>
-      ${hypNote}${geoNote}`;
+      ${hypNote}${geoNote}${plNote}`;
   }
 
   function update(data) {
