@@ -1,0 +1,6 @@
+__pycache__/
+tools/probe.log
+tools/probe.DONE
+tools/probe.FAILED
+tools/probe_schema.txt
+*.pyc

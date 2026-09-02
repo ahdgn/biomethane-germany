@@ -1,0 +1,14 @@
+{
+  "_comment": "The 7 workshop decisions, as config. The screening filter reads this file — no threshold lives in code. Values below are placeholders pending the expert workshop.",
+  "size_band_kw_el": { "min": 75, "max": 1500 },
+  "eeg_expiry_window": { "from": 2026, "to": 2032, "include_tender_winners": false },
+  "fuel_scope": ["Biogas"],
+  "grid_criterion": {
+    "mode": "dso_rating",
+    "_options": "dso_rating (hard/medium/easy by operator) | distance_osm | none",
+    "max_rating": "medium"
+  },
+  "geography": { "mode": "nationwide", "priority_laender": ["Niedersachsen", "Nordrhein-Westfalen"] },
+  "cluster_mode": { "enabled": true, "radius_km": 15, "min_units": 3 },
+  "flexibilised_plants": { "include": true, "flag_separately": true }
+}

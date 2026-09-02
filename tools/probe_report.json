@@ -1,0 +1,133 @@
+{
+  "generated": "2026-09-02T20:44:01.476462",
+  "tables": [
+    "balancing_area",
+    "basic_units",
+    "biomass_eeg",
+    "biomass_extended",
+    "changed_dso_assignment",
+    "combustion_extended",
+    "deleted_market_actors",
+    "deleted_units",
+    "electricity_consumer",
+    "gas_consumer",
+    "gas_producer",
+    "gas_storage",
+    "gas_storage_extended",
+    "grid_connections",
+    "grids",
+    "gsgk_eeg",
+    "gsgk_extended",
+    "hydro_eeg",
+    "hydro_extended",
+    "kwk",
+    "locations_basic",
+    "locations_extended",
+    "market_actors",
+    "market_actors_and_roles",
+    "nuclear_extended",
+    "permit",
+    "retrofit_units",
+    "solar_eeg",
+    "solar_extended",
+    "storage_eeg",
+    "storage_extended",
+    "storage_units",
+    "wind_eeg",
+    "wind_extended"
+  ],
+  "biomass": {
+    "table": "biomass_extended",
+    "total_units": 24315,
+    "by_status": {
+      "In Betrieb": 21665,
+      "Endgültig stillgelegt": 1827,
+      "In Planung": 474,
+      "Vorübergehend stillgelegt": 349
+    },
+    "active_units": 21665,
+    "active_by_fuel": {
+      "Biogas": 17980,
+      "Biomethan (Bioerdgas)": 1157,
+      "Klärgas": 1003,
+      "Wald-Holzhackschnitzel, Wald-Scheitholz, -Kronenholz": 412,
+      "Palmöl u.a. Pflanzenöle": 355,
+      "Deponiegas": 162,
+      "Rinde und Landschaftspflegeholz": 92,
+      "Flüssige biogene Stoffe und Abfälle": 89,
+      "Holzgas (Gas Biomasse)": 87,
+      "Holz-Pellets, Holz-Briketts": 81,
+      "Altholz, Gebrauchtholz, Holz(sperr)müll": 80,
+      "Feste biogene Stoffe": 60
+    },
+    "field_coverage_pct_active": {
+      "coordinates": 96.1,
+      "gemeindeschluessel": 100.0,
+      "commissioning_date": 100.0,
+      "gross_power_kw": 100.0,
+      "eeg_mastr_link": 100.0,
+      "operator_id": 100.0,
+      "plz": 100.0
+    },
+    "active_power": {
+      "sum_MW": 9066.0,
+      "median_kW": 250.0,
+      "in_75_500kW": 14480,
+      "in_500_1500kW": 4632,
+      "over_1500kW": 538
+    },
+    "eeg_expiry_by_year_2024_2035": {
+      "2024": 355,
+      "2025": 957,
+      "2026": 1585,
+      "2027": 1215,
+      "2028": 738,
+      "2029": 1069,
+      "2030": 1797,
+      "2031": 3221,
+      "2032": 886,
+      "2033": 952,
+      "2034": 1457,
+      "2035": 484
+    },
+    "biogas_eeg_end_2026_2032": {
+      "units": 9021,
+      "sum_MW": 2965.0,
+      "in_75_500kW": 6903,
+      "in_500_1500kW": 1838,
+      "over_1500kW": 25
+    },
+    "active_biogas_units": 17980,
+    "active_biogas_with_coords_pct": 98.1
+  },
+  "biomass_eeg": {
+    "table": "biomass_eeg",
+    "rows": 15631,
+    "eeg_key_coverage_pct": 84.5,
+    "flex_flag_column": "BiogasInanspruchnahmeFlexiPraemie",
+    "flex_counts": {
+      "NaN": 5729,
+      "0.0": 5277,
+      "1.0": 4625
+    },
+    "tender_award_column": "Zuschlagsnummer",
+    "tender_award_nonnull": 2535
+  },
+  "gas_producer": {
+    "table": "gas_producer",
+    "total_units": 399,
+    "by_status": {
+      "In Betrieb": 370,
+      "In Planung": 23,
+      "Endgültig stillgelegt": 6
+    },
+    "by_type": {
+      "Biomethan-Erzeugung": 305,
+      "null": 56,
+      "Förderung fossilen Erdgases": 19,
+      "Power-to-Gas (Wasserstoff)": 12,
+      "Liquefied Natural Gas": 4,
+      "Power-to-Gas (Methan)": 3
+    }
+  }
+}
