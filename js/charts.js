@@ -256,8 +256,8 @@ const Charts = (() => {
     setEmpty('chart-departments', data.length === 0);
     const byDept = {};
     data.forEach(d => {
-      const dept = d.departement || 'Unknown';
-      byDept[dept] = (byDept[dept] || 0) + 1;
+      if (!d.departement) return; // rares unités sans Kreis dérivable
+      byDept[d.departement] = (byDept[d.departement] || 0) + 1;
     });
     const sorted = Object.entries(byDept).sort((a, b) => b[1] - a[1]).slice(0, 10);
 

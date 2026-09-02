@@ -75,6 +75,13 @@ def main():
         ["Biomethan-Erzeugung", "Power-to-Gas (Wasserstoff)", "Power-to-Gas (Methan)"])]
     # foreign registrations (e.g. Dutch plants) carry no Bundesland and no AGS
     gp = gp[gp["Bundesland"].notna() | gp["Gemeindeschluessel"].notna()]
+    # the gas table has no Landkreis column — derive it from the AGS prefix
+    # (first 5 digits = Kreis), using the biomass table as lookup
+    kreis = pd.read_sql(
+        'SELECT DISTINCT SUBSTR("Gemeindeschluessel",1,5) AS k, "Landkreis" AS lk'
+        ' FROM "biomass_extended"'
+        ' WHERE "Landkreis" IS NOT NULL AND "Gemeindeschluessel" IS NOT NULL', engine)
+    kreis_map = dict(zip(kreis["k"], kreis["lk"]))
     gp["annee"] = pd.to_datetime(gp["Inbetriebnahmedatum"], errors="coerce").dt.year
     out = []
     for _, u in gp.iterrows():
@@ -83,6 +90,8 @@ def main():
             "nom": clean(u["NameGaserzeugungseinheit"]) or "Unnamed",
             "op": clean(u["AnlagenbetreiberMastrNummer"]),
             "bl": clean(u["Bundesland"]),
+            "lk": kreis_map.get(str(u["Gemeindeschluessel"])[:5])
+                  if pd.notna(u["Gemeindeschluessel"]) else None,
             "gem": clean(u["Gemeinde"]),
             "ags": clean(u["Gemeindeschluessel"]),
             "ort": clean(u["Ort"]),
