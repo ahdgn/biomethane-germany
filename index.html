@@ -140,6 +140,32 @@
         </select>
       </div>
 
+      <!-- Relationship status (registre ACR) -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-eval">Relationship status</label>
+        <select id="filter-eval">
+          <option value="">All</option>
+          <option value="owners">Owners known</option>
+          <option value="feedstock">Feedstock suppliers nearby</option>
+          <option value="rejected">Evaluated &amp; rejected</option>
+          <option value="evaluating">Under evaluation</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+
+      <!-- Gas grid difficulty (expérience ACR/Redekon) -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-grid">Gas grid difficulty</label>
+        <select id="filter-grid">
+          <option value="">All</option>
+          <option value="easy">Easy (&le; 12 months)</option>
+          <option value="medium">Medium (12&ndash;24 months)</option>
+          <option value="hard">Hard (~36 months)</option>
+          <option value="unrated">Not rated</option>
+        </select>
+        <span class="filter-hint">Time to gas grid connection in ACR / Redekon experience &mdash; scored per operator by the team</span>
+      </div>
+
       <!-- Statut -->
       <div class="filter-group">
         <span class="filter-label" id="label-status">Status</span>

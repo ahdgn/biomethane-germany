@@ -51,6 +51,12 @@
       }
     } catch (e) { /* registre absent : couche pipeline simplement inactive */ }
 
+    // Catégories du registre : défauts pour tous les sites
+    allData.forEach(r => {
+      r.evalStatus = (r.pipeline && r.pipeline.eval) || 'unknown';
+      r.gridRating = (r.pipeline && r.pipeline.grid) || '';
+    });
+
     /* ---- Init des modules ---- */
     MapView.init();
     Charts.init();

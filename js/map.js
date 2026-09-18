@@ -127,6 +127,10 @@ const MapView = (() => {
       rows.push(['Support end (est.)', String(d.echeanceAnnee)]);
     if (d.pipeline)
       rows.push(['ACR pipeline', `${d.pipeline.project} — ${d.pipeline.status} (${d.pipeline.confidence})`]);
+    if (d.evalStatus && d.evalStatus !== 'unknown')
+      rows.push(['Relationship', CONFIG.EVAL_LABELS[d.evalStatus] || d.evalStatus]);
+    if (d.gridRating)
+      rows.push(['Grid difficulty', CONFIG.GRID_LABELS[d.gridRating] || d.gridRating]);
 
     const hypNote = d.echeanceHyp
       ? `<div class="legend-note">Assumption: ${escapeHtml(d.echeanceHyp)}</div>` : '';
