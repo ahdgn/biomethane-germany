@@ -179,6 +179,8 @@ const Filters = (() => {
     document.getElementById('filter-region').addEventListener('change', (e) => {
       state.region = e.target.value;
       applyFilters();
+      // recentre la carte sur le Land choisi (vue complete du Land)
+      if (typeof MapView !== 'undefined' && MapView.fitRegion) MapView.fitRegion(state.region);
     });
     document.getElementById('filter-operator').addEventListener('change', (e) => {
       state.operator = e.target.value;
