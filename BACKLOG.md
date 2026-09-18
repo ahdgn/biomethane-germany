@@ -22,13 +22,18 @@ most relevant integrations, keep costs low.
 - [ ] DSO name per site (municipality → gas supply-area mapping)
 
 ## v2 — Data enrichment
-- [ ] Permits layer: computed "likely BImSchG" flag from legal capacity /
-      gas-volume thresholds + manual refinement per shortlisted site; permitted
-      waste volumes = register field (no central permit register exists)
+- [x] Permits layer: "BImSchG likely" heuristic flag (site >= 400 kW el ~ 1 MW
+      thermal, 4. BImSchV): 6,173 / 14,471 sites. Refinement per shortlisted
+      site stays a register field
 - [ ] Gas-grid geometry + operator overlay — pending Lars's paid source (name +
       price; likely WGI Gasnetzkarte); OSM pipelines as interim proxy
-- [ ] Netztransparenz join (actual kWh + € per plant) — run the EEG-key
-      match-rate probe first
+- [ ] Netztransparenz join — PROBE DONE 18/09: 2025 Anlagenstammdaten (4 TSO
+      zips, ~110 MB, direct CDN links on the EEG-Anlagenstammdaten page) join
+      MaStR on `EEG_Mastr_Nr`: **69.3% of active biomass units matched**
+      (9,904 / 14,284). Integration next: decode Energietraeger codes via the
+      legend XLSX, characterise the unmatched ~31% (post-EEG? 2026 units?),
+      then pull €/kWh per plant from the *Bewegungsdaten* files (same keys)
+      into the ETL
 - [ ] Feedstock-area polygons (draw supplier zones, stored in the register)
 
 ## v2.5 — Prioritization
