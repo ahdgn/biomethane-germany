@@ -10,7 +10,7 @@
   <!-- Librairies vendorisées (pas de CDN, pas de fonte externe) -->
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/leaflet/MarkerCluster.css">
-  <link rel="stylesheet" href="css/style.css?v=20260918-4">
+  <link rel="stylesheet" href="css/style.css?v=20260918-6">
 </head>
 <body>
 
@@ -300,6 +300,24 @@
     </main>
   </div>
 
+  <!-- PANNEAU QUALIFICATION (registre Airtable) -->
+  <aside class="qualify-drawer" id="qualify-drawer" hidden aria-label="Qualify this site">
+    <div class="qualify-head">
+      <h2>Qualify this site</h2>
+      <button class="icon-btn" id="qualify-close" aria-label="Close the qualification panel">✕</button>
+    </div>
+    <div class="qualify-site" id="qualify-site"></div>
+    <div class="qualify-form">
+      <p class="qualify-noform" id="qualify-noform" hidden>
+        The register form is not connected yet — create the shared Airtable form
+        and paste its link into <code>REGISTER_FORM_URL</code> (see REGISTER.md).
+      </p>
+      <iframe id="qualify-frame" hidden title="Site qualification form (Airtable)"></iframe>
+    </div>
+    <p class="qualify-hint">Submitting creates a row in the team register (Airtable).
+    It appears on the map after the next register sync.</p>
+  </aside>
+
   <!-- FOOTER -->
   <footer class="app-footer" id="app-footer">
     <span id="footer-source"></span>
@@ -312,11 +330,12 @@
   <script src="vendor/chartjs/chart.umd.min.js"></script>
 
   <!-- App -->
-  <script src="js/config.js?v=20260918-4"></script>
-  <script src="js/filters.js?v=20260918-4"></script>
-  <script src="js/map.js?v=20260918-4"></script>
-  <script src="js/charts.js?v=20260918-4"></script>
-  <script src="js/table.js?v=20260918-4"></script>
-  <script src="js/app.js?v=20260918-4"></script>
+  <script src="js/config.js?v=20260918-6"></script>
+  <script src="js/filters.js?v=20260918-6"></script>
+  <script src="js/map.js?v=20260918-6"></script>
+  <script src="js/charts.js?v=20260918-6"></script>
+  <script src="js/table.js?v=20260918-6"></script>
+  <script src="js/qualify.js?v=20260918-6"></script>
+  <script src="js/app.js?v=20260918-6"></script>
 </body>
 </html>

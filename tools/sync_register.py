@@ -49,7 +49,10 @@ def main():
         if not offset:
             break
 
-    entries = []
+    # Le formulaire cree toujours une nouvelle fiche : en cas de doublon
+    # sur un MaStR-Nr, la plus recente l'emporte.
+    records.sort(key=lambda r: r.get("createdTime", ""))
+    by_site = {}
     for r in records:
         f = r.get("fields", {})
         site = (f.get("MaStR-Nr") or "").strip()
@@ -72,7 +75,8 @@ def main():
             e["waste"] = str(f["Permitted waste (t/a)"])
         if f.get("Notes"):
             e["note"] = f["Notes"]
-        entries.append(e)
+        by_site[site] = e
+    entries = list(by_site.values())
 
     entries.sort(key=lambda e: (e.get("project") or "~", e["site"]))
     with open(OUT, "w", encoding="utf-8") as fh:

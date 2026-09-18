@@ -146,6 +146,11 @@ const CONFIG = (() => {
 
   const SOURCE_NOTE = 'Marktstammdatenregister (BNetzA), extract of 18/09/2026 — via open-mastr';
 
+  /* Lien partagé du formulaire Airtable « Qualify a site » (voir REGISTER.md).
+     Vide = le panneau de qualification montre l'identité du site et explique
+     que le formulaire n'est pas encore branché. */
+  const REGISTER_FORM_URL = 'https://airtable.com/app1HPXkXIa9xYSin/shr39m5HuDyXASrit';
+
   // ---- Formats (UI française, données allemandes) ----
   const fmtInt = (n) => (n == null ? '—' : Math.round(n).toLocaleString('en-GB'));
   const fmtNum = (n, dec = 1) =>
@@ -190,7 +195,7 @@ const CONFIG = (() => {
       && fin >= 2026 && fin <= 2032 && !d.zuschlag;
   }
 
-  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, TYPE_DESCRIPTIONS, EVAL_LABELS, TAG_LABELS, GRID_LABELS, DATASETS, CAP_UNITS, SOURCE_NOTE,
+  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, TYPE_DESCRIPTIONS, EVAL_LABELS, TAG_LABELS, GRID_LABELS, DATASETS, CAP_UNITS, SOURCE_NOTE, REGISTER_FORM_URL,
            YEAR_FLOOR, YEAR_FLOOR_LABEL,
            fmtInt, fmtNum, fmtDate, escapeHtml, typeColor, echeance, prospection1 };
 })();

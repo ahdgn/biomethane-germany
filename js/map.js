@@ -108,12 +108,19 @@ const MapView = (() => {
 
     // Lien « 50 km around » des popups -> filtre rayon
     map.on('popupopen', (e) => {
-      const a = e.popup.getElement().querySelector('a[data-radius-id]');
-      if (!a) return;
-      a.addEventListener('click', (ev) => {
+      const el = e.popup.getElement();
+      const a = el.querySelector('a[data-radius-id]');
+      if (a) a.addEventListener('click', (ev) => {
         ev.preventDefault();
         const d = dataById.get(a.dataset.radiusId);
         if (d) Filters.setRadius(d.lat, d.lon, 50, d.nom);
+        map.closePopup();
+      });
+      const q = el.querySelector('a[data-qualify-id]');
+      if (q) q.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const d = dataById.get(q.dataset.qualifyId);
+        if (d) Qualify.open(d);
         map.closePopup();
       });
     });
@@ -222,6 +229,8 @@ const MapView = (() => {
     const radiusLink = (d.lat != null && d.lon != null)
       ? `<a class="popup-link" href="#" data-radius-id="${escapeHtml(d.id)}"
            title="Filter to plants around this site">⌖ 50 km around</a>` : '';
+    const qualifyLink = `<a class="popup-link" href="#" data-qualify-id="${escapeHtml(d.id)}"
+           title="Open the qualification panel and file this site in the team register">✎ Qualify</a>`;
 
     return `
       <div class="popup-title">${escapeHtml(d.nom)}</div>
@@ -231,6 +240,7 @@ const MapView = (() => {
       </dl>
       <div class="popup-foot">
         <span class="status-tag ${d.ouvert ? 'open' : 'closed'}">${d.ouvert ? 'Operating' : 'Closed'}</span>
+        ${qualifyLink}
         ${radiusLink}
         ${gmaps}
       </div>
