@@ -24,6 +24,13 @@ table **Sites** — created and seeded with the 7 Fox/Otter entries on 18/09/202
 
 Field names must match exactly — the sync maps on them.
 
+**Pipeline rule**: a site is part of the "ACR pipeline" (amber halo on the
+map, "ACR pipeline only" filter) **only when its `Project` field is filled**.
+A register row without a project still enriches the site (status, tags,
+notes, grid rating in popups and filters) — it records team knowledge
+without putting the site in the pipe. Rejected sites stay in the base on
+purpose: that memory prevents re-evaluating them later.
+
 ## Sync
 
 ```bash
