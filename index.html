@@ -10,7 +10,7 @@
   <!-- Librairies vendorisées (pas de CDN, pas de fonte externe) -->
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/leaflet/MarkerCluster.css">
-  <link rel="stylesheet" href="css/style.css?v=20260918-6">
+  <link rel="stylesheet" href="css/style.css?v=20260918-7">
 </head>
 <body>
 
@@ -78,11 +78,9 @@
       <div class="filter-group" id="group-radius" hidden>
         <span class="filter-label">Radius search</span>
         <span class="filter-hint" id="radius-label"></span>
-        <div class="segmented segmented-sm" id="radius-km" role="group" aria-label="Radius">
-          <button class="seg-btn" data-km="25" aria-pressed="false">25 km</button>
-          <button class="seg-btn" data-km="50" aria-pressed="true">50 km</button>
-          <button class="seg-btn" data-km="100" aria-pressed="false">100 km</button>
-        </div>
+        <input type="range" id="radius-km" class="radius-slider" min="5" max="150" step="5" value="50"
+               aria-label="Radius in kilometres">
+        <div class="dual-range-bounds" aria-hidden="true"><span>5 km</span><span>150 km</span></div>
         <button class="btn-secondary" id="radius-clear">Clear radius</button>
       </div>
 
@@ -330,12 +328,12 @@
   <script src="vendor/chartjs/chart.umd.min.js"></script>
 
   <!-- App -->
-  <script src="js/config.js?v=20260918-6"></script>
-  <script src="js/filters.js?v=20260918-6"></script>
-  <script src="js/map.js?v=20260918-6"></script>
-  <script src="js/charts.js?v=20260918-6"></script>
-  <script src="js/table.js?v=20260918-6"></script>
-  <script src="js/qualify.js?v=20260918-6"></script>
-  <script src="js/app.js?v=20260918-6"></script>
+  <script src="js/config.js?v=20260918-7"></script>
+  <script src="js/filters.js?v=20260918-7"></script>
+  <script src="js/map.js?v=20260918-7"></script>
+  <script src="js/charts.js?v=20260918-7"></script>
+  <script src="js/table.js?v=20260918-7"></script>
+  <script src="js/qualify.js?v=20260918-7"></script>
+  <script src="js/app.js?v=20260918-7"></script>
 </body>
 </html>

@@ -1135,3 +1135,12 @@ body.qualify-open .bottom-panel { display: none; }
 @media (max-width: 860px) {
   .qualify-drawer { width: 100vw; max-width: 100vw; top: 48px; bottom: 0; }
 }
+
+
+/* ---- Curseur du filtre rayon ---- */
+.radius-slider {
+  width: 100%;
+  margin: 6px 0 2px;
+  accent-color: #22788C;
+  cursor: pointer;
+}

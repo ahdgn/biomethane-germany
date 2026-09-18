@@ -178,7 +178,7 @@ const MapView = (() => {
       ? `border-radius: 3px; transform: rotate(45deg);`
       : `border-radius: 50%;`;
     // sites du registre pipeline ACR : halo ambre pour les repérer d'un coup d'œil
-    const ring = d.pipeline
+    const ring = d.inPipeline
       ? `border:2.5px solid ${PALETTE.amber};box-shadow:0 0 0 2px rgba(251,174,64,0.35);`
       : `border:1.5px solid #fff;box-shadow:0 1px 3px rgba(30,66,96,0.4);`;
     return L.divIcon({
@@ -206,8 +206,9 @@ const MapView = (() => {
       rows.splice(1, 0, ['Fuel', d.combustible]);
     if (d.echeanceAnnee != null)
       rows.push(['Support end (est.)', String(d.echeanceAnnee)]);
-    if (d.pipeline)
-      rows.push(['ACR pipeline', `${d.pipeline.project} — ${d.pipeline.status} (${d.pipeline.confidence})`]);
+    if (d.inPipeline)
+      rows.push(['ACR pipeline', [d.pipeline.project, d.pipeline.status, d.pipeline.confidence]
+        .filter(Boolean).join(' \u00b7 ')]);
     if (d.evalStatus && d.evalStatus !== 'unknown')
       rows.push(['Relationship', CONFIG.EVAL_LABELS[d.evalStatus] || d.evalStatus]);
     if (d.gridRating)

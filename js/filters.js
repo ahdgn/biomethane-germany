@@ -128,8 +128,8 @@ const Filters = (() => {
     if (p.has('gr') && ['easy', 'medium', 'hard', 'unrated'].includes(p.get('gr'))) state.grid = p.get('gr');
     if (p.has('rad')) {
       const [la, lo, km] = p.get('rad').split(',').map(Number);
-      if (Number.isFinite(la) && Number.isFinite(lo) && [25, 50, 100].includes(km))
-        state.radius = { lat: la, lon: lo, km, label: '' };
+      if (Number.isFinite(la) && Number.isFinite(lo) && Number.isFinite(km) && km >= 5 && km <= 150)
+        state.radius = { lat: la, lon: lo, km: Math.round(km / 5) * 5, label: '' };
     }
     if (p.has('y')) {
       const [a, b] = p.get('y').split('-').map(Number);
@@ -268,14 +268,16 @@ const Filters = (() => {
       applyFilters();
     });
 
-    // Filtre rayon : boutons km + effacer
-    document.getElementById('radius-km').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-km]');
-      if (!btn || !state.radius) return;
-      state.radius.km = parseInt(btn.dataset.km, 10);
+    // Filtre rayon : curseur continu — le cercle et le zoom suivent le
+    // geste, le filtrage est debounce pour rester fluide sur 14k sites.
+    let radiusTimeout;
+    document.getElementById('radius-km').addEventListener('input', (e) => {
+      if (!state.radius) return;
+      state.radius.km = parseInt(e.target.value, 10);
       updateRadiusUI();
       MapView.showRadius(state.radius.lat, state.radius.lon, state.radius.km);
-      applyFilters();
+      clearTimeout(radiusTimeout);
+      radiusTimeout = setTimeout(applyFilters, 160);
     });
     document.getElementById('radius-clear').addEventListener('click', clearRadius);
 
@@ -364,7 +366,7 @@ const Filters = (() => {
 
     filteredData = allData.filter(d => {
       if (state.prospection && !prospection1(d)) return false;
-      if (state.pipeline && !d.pipeline) return false;
+      if (state.pipeline && !d.inPipeline) return false;
       if (state.relation && d.evalStatus !== state.relation) return false;
       if (state.grid) {
         if (state.grid === 'unrated' ? !!d.gridRating : d.gridRating !== state.grid) return false;
@@ -498,8 +500,7 @@ const Filters = (() => {
     document.getElementById('radius-label').textContent = state.radius.label
       ? `${state.radius.km} km around ${state.radius.label}`
       : `${state.radius.km} km around the selected point`;
-    document.querySelectorAll('#radius-km .seg-btn').forEach(b =>
-      b.setAttribute('aria-pressed', String(parseInt(b.dataset.km, 10) === state.radius.km)));
+    document.getElementById('radius-km').value = state.radius.km;
   }
 
   function onChange(cb) { onChangeCallbacks.push(cb); }

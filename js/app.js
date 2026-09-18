@@ -47,6 +47,9 @@
         allData.forEach(r => {
           const raw = r.id.replace(/^(chp|inj)-/, '');
           if (bySite[raw]) r.pipeline = bySite[raw];
+          // Dans le pipe ACR = rattache a un projet nomme ; une fiche
+          // registre sans projet enrichit le site sans le mettre au pipe.
+          r.inPipeline = !!(r.pipeline && r.pipeline.project);
         });
       }
     } catch (e) { /* registre absent : couche pipeline simplement inactive */ }
