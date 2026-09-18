@@ -36,6 +36,8 @@ const MapView = (() => {
   // légende repliée par défaut sur petit écran (elle couvrirait la carte)
   let legendCollapsed = window.matchMedia('(max-width: 860px)').matches;
   const markers = new Map(); // id -> marker
+  const dataById = new Map(); // id -> site (pour le lien rayon des popups)
+  let radiusCircle = null;
 
   function init() {
     map = L.map('map', {
@@ -103,12 +105,38 @@ const MapView = (() => {
     map.addLayer(clusterGroup);
 
     addLegend();
+
+    // Lien « 50 km around » des popups -> filtre rayon
+    map.on('popupopen', (e) => {
+      const a = e.popup.getElement().querySelector('a[data-radius-id]');
+      if (!a) return;
+      a.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const d = dataById.get(a.dataset.radiusId);
+        if (d) Filters.setRadius(d.lat, d.lon, 50, d.nom);
+        map.closePopup();
+      });
+    });
+
     // vue d'entrée : la France entière, quelle que soit la taille de l'écran
     fitFrance();
   }
 
   function fitFrance() {
     if (map) map.fitBounds(FRANCE_BOUNDS, { padding: [10, 10] });
+  }
+
+  /* Cercle du filtre rayon : dessiné/retiré par Filters via show/hideRadius */
+  function showRadius(lat, lon, km) {
+    hideRadius();
+    radiusCircle = L.circle([lat, lon], {
+      radius: km * 1000, color: PALETTE.teal, weight: 1.5,
+      dashArray: '6 6', fillColor: PALETTE.teal, fillOpacity: 0.05,
+    }).addTo(map);
+    map.fitBounds(radiusCircle.getBounds(), { padding: [20, 20] });
+  }
+  function hideRadius() {
+    if (radiusCircle) { map.removeLayer(radiusCircle); radiusCircle = null; }
   }
 
   // Recentre sur un Land (nom MaStR) ; '' ou inconnu -> Allemagne entière
@@ -169,6 +197,10 @@ const MapView = (() => {
       rows.push(['Relationship', CONFIG.EVAL_LABELS[d.evalStatus] || d.evalStatus]);
     if (d.gridRating)
       rows.push(['Grid difficulty', CONFIG.GRID_LABELS[d.gridRating] || d.gridRating]);
+    if (d.pipeline && d.pipeline.tags && d.pipeline.tags.length)
+      rows.push(['Team knowledge', d.pipeline.tags.map(t => CONFIG.TAG_LABELS[t] || t).join(' \u00b7 ')]);
+    if (d.pipeline && d.pipeline.waste)
+      rows.push(['Permitted waste', d.pipeline.waste]);
 
     const hypNote = d.echeanceHyp
       ? `<div class="legend-note">Assumption: ${escapeHtml(d.echeanceHyp)}</div>` : '';
@@ -179,6 +211,9 @@ const MapView = (() => {
     const gmaps = (d.lat != null && d.lon != null)
       ? `<a class="popup-link" href="https://www.google.com/maps?q=${d.lat},${d.lon}"
            target="_blank" rel="noopener noreferrer">Google Maps ↗</a>` : '';
+    const radiusLink = (d.lat != null && d.lon != null)
+      ? `<a class="popup-link" href="#" data-radius-id="${escapeHtml(d.id)}"
+           title="Filter to plants around this site">⌖ 50 km around</a>` : '';
 
     return `
       <div class="popup-title">${escapeHtml(d.nom)}</div>
@@ -188,6 +223,7 @@ const MapView = (() => {
       </dl>
       <div class="popup-foot">
         <span class="status-tag ${d.ouvert ? 'open' : 'closed'}">${d.ouvert ? 'Operating' : 'Closed'}</span>
+        ${radiusLink}
         ${gmaps}
       </div>
       ${hypNote}${geoNote}${plNote}`;
@@ -197,8 +233,10 @@ const MapView = (() => {
     clusterGroup.clearLayers();
     markers.clear();
 
+    dataById.clear();
     const layer = [];
     data.forEach(d => {
+      dataById.set(d.id, d);
       if (d.lat == null || d.lon == null) return;
       const marker = L.marker([d.lat, d.lon], {
         icon: createIcon(d),
@@ -286,5 +324,5 @@ const MapView = (() => {
   }
 
   // popupHtml exposé : réutilisé pour la fiche site (one-pager) et les tests
-  return { init, update, focusOn, invalidateSize, fitFrance, fitRegion, popupHtml };
+  return { init, update, focusOn, invalidateSize, fitFrance, fitRegion, showRadius, hideRadius, popupHtml };
 })();
