@@ -122,7 +122,7 @@ const CONFIG = (() => {
   const YEAR_FLOOR = 2000;
   const YEAR_FLOOR_LABEL = '< ' + YEAR_FLOOR;
 
-  const SOURCE_NOTE = 'Marktstammdatenregister (BNetzA), extract of 02/09/2026 — via open-mastr';
+  const SOURCE_NOTE = 'Marktstammdatenregister (BNetzA), extract of 18/09/2026 — via open-mastr';
 
   // ---- Formats (UI française, données allemandes) ----
   const fmtInt = (n) => (n == null ? '—' : Math.round(n).toLocaleString('en-GB'));
