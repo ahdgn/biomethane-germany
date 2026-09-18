@@ -7,7 +7,8 @@ pulls them into `data/pipeline.json` (committed via PR like any change).
 
 ## Airtable base
 
-One base (e.g. "Biomethan Radar — Register"), one table **Sites**:
+Live base: **"Biomethane Germany Screening tool"** (`app1HPXkXIa9xYSin`),
+table **Sites** — created and seeded with the 7 Fox/Otter entries on 18/09/2026:
 
 | Field | Type | Choices |
 |---|---|---|
@@ -27,7 +28,7 @@ Field names must match exactly — the sync maps on them.
 
 ```bash
 set AIRTABLE_TOKEN=pat...        # personal access token, scope data.records:read on the base
-set AIRTABLE_BASE=app...         # base id (from the base URL)
+set AIRTABLE_BASE=app1HPXkXIa9xYSin
 python tools/sync_register.py    # rewrites data/pipeline.json
 ```
 
