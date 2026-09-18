@@ -193,7 +193,7 @@ const DataTable = (() => {
     const headers = ['Base', 'Plant', 'Municipality', 'District (Landkreis)', 'Bundesland', 'Type',
       'Capacity', 'Capacity unit', 'Commissioned',
       'Support end (est.)', 'Support end assumption', 'Operator (MaStR-Nr)', 'Technology',
-      'Status', 'Latitude', 'Longitude', 'Geo precision', 'Google Maps link'];
+      'Status', 'ACR project', 'ACR status', 'Latitude', 'Longitude', 'Geo precision', 'Google Maps link'];
 
     const rows = currentData.map(d => [
       d.base === 'cogen' ? 'CHP' : 'Injection',
@@ -205,6 +205,8 @@ const DataTable = (() => {
       d.echeanceHyp || '',
       d.opId || '', d.reseau,
       d.ouvert ? 'Operating' : 'Closed',
+      d.pipeline ? d.pipeline.project : '',
+      d.pipeline ? `${d.pipeline.status} (${d.pipeline.confidence})` : '',
       d.lat != null ? String(d.lat).replace('.', ',') : '',
       d.lon != null ? String(d.lon).replace('.', ',') : '',
       d.geoPrecision || '',
