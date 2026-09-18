@@ -9,6 +9,27 @@ const MapView = (() => {
 
   const FRANCE_BOUNDS = L.latLngBounds([47.2, 5.8], [55.1, 15.1]);
 
+  /* Emprises des Länder (précalculées depuis tools/geo/bundeslaender.geo.json)
+     — sélectionner un Land recentre la carte dessus, vue complète. */
+  const REGION_BOUNDS = {
+    'Baden-Württemberg': [[47.537, 7.512], [49.788, 10.505]],
+    'Bayern': [[47.270, 8.995], [50.565, 13.836]],
+    'Berlin': [[52.339, 13.094], [52.675, 13.768]],
+    'Brandenburg': [[51.362, 11.273], [53.556, 14.747]],
+    'Bremen': [[53.015, 8.487], [53.230, 8.993]],
+    'Hamburg': [[53.405, 9.724], [53.748, 10.337]],
+    'Hessen': [[49.404, 7.785], [51.657, 10.237]],
+    'Mecklenburg-Vorpommern': [[53.108, 10.597], [54.685, 14.416]],
+    'Niedersachsen': [[51.301, 6.631], [53.931, 11.602]],
+    'Nordrhein-Westfalen': [[50.322, 5.872], [52.533, 9.466]],
+    'Rheinland-Pfalz': [[48.969, 6.098], [50.943, 8.509]],
+    'Saarland': [[49.113, 6.355], [49.643, 7.412]],
+    'Sachsen': [[50.180, 11.879], [51.681, 15.038]],
+    'Sachsen-Anhalt': [[50.945, 10.563], [53.039, 13.199]],
+    'Schleswig-Holstein': [[53.370, 7.863], [55.057, 11.314]],
+    'Thüringen': [[50.200, 9.873], [51.645, 12.666]],
+  };
+
   let map;
   let clusterGroup;
   let legendDiv;
@@ -88,6 +109,14 @@ const MapView = (() => {
 
   function fitFrance() {
     if (map) map.fitBounds(FRANCE_BOUNDS, { padding: [10, 10] });
+  }
+
+  // Recentre sur un Land (nom MaStR) ; '' ou inconnu -> Allemagne entière
+  function fitRegion(name) {
+    if (!map) return;
+    const b = REGION_BOUNDS[name];
+    if (b) map.fitBounds(L.latLngBounds(b), { padding: [16, 16] });
+    else fitFrance();
   }
 
   /* Rayon ∝ racine de la capacité en MW — étalonné sur la plage allemande :
@@ -257,5 +286,5 @@ const MapView = (() => {
   }
 
   // popupHtml exposé : réutilisé pour la fiche site (one-pager) et les tests
-  return { init, update, focusOn, invalidateSize, fitFrance, popupHtml };
+  return { init, update, focusOn, invalidateSize, fitFrance, fitRegion, popupHtml };
 })();
