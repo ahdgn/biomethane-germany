@@ -18,6 +18,7 @@ const Filters = (() => {
     status: '',      // '' | 'open' | 'closed'
     window: '',      // '' | 'echue' | '2026-2029' | '2030+'
     prospection: false, // filtre prospection 1 (périmètre thèse)
+    pipeline: false,    // sites du registre pipeline ACR uniquement
   };
 
   const bounds = { yearMin: null, yearMax: null, hasPre: false };
@@ -115,6 +116,7 @@ const Filters = (() => {
     if (p.has('s') && ['open', 'closed'].includes(p.get('s'))) state.status = p.get('s');
     if (p.has('w') && ['echue', '2026-2029', '2030+'].includes(p.get('w'))) state.window = p.get('w');
     if (p.get('p') === '1') state.prospection = true;
+    if (p.get('pl') === '1') state.pipeline = true;
     if (p.has('y')) {
       const [a, b] = p.get('y').split('-').map(Number);
       if (a >= bounds.yearMin && a <= bounds.yearMax) state.yearMin = a;
@@ -136,6 +138,7 @@ const Filters = (() => {
     if (state.status) p.set('s', state.status);
     if (state.window) p.set('w', state.window);
     if (state.prospection) p.set('p', '1');
+    if (state.pipeline) p.set('pl', '1');
     if (state.yearMin !== bounds.yearMin || state.yearMax !== bounds.yearMax)
       p.set('y', `${state.yearMin}-${state.yearMax}`);
     if (state.types.size !== allTypes.length) p.set('t', [...state.types].join('|'));
@@ -214,6 +217,12 @@ const Filters = (() => {
       state.prospection = e.target.checked;
       applyFilters();
     });
+
+    // Filtre pipeline ACR
+    document.getElementById('filter-pipeline').addEventListener('change', (e) => {
+      state.pipeline = e.target.checked;
+      applyFilters();
+    });
     const infoBtn = document.getElementById('prospection-info-btn');
     const infoPop = document.getElementById('prospection-info');
     infoBtn.addEventListener('click', () => {
@@ -283,6 +292,7 @@ const Filters = (() => {
     syncSegmented('filter-status', 'status', state.status);
     syncSegmented('filter-window', 'window', state.window);
     document.getElementById('filter-prospection').checked = state.prospection;
+    document.getElementById('filter-pipeline').checked = state.pipeline;
     if (loadedBases.length > 1) syncSegmented('filter-base', 'base', state.base);
     updateYearUI();
   }
@@ -296,6 +306,7 @@ const Filters = (() => {
     if (state.status) n++;
     if (state.window) n++;
     if (state.prospection) n++;
+    if (state.pipeline) n++;
     if (state.types.size !== allTypes.length) n++;
     if (state.yearMin !== bounds.yearMin || state.yearMax !== bounds.yearMax) n++;
     return n;
@@ -309,6 +320,7 @@ const Filters = (() => {
 
     filteredData = allData.filter(d => {
       if (state.prospection && !prospection1(d)) return false;
+      if (state.pipeline && !d.pipeline) return false;
       if (state.base && d.base !== state.base) return false;
       if (state.search) {
         const hit = (d.nom || '').toLowerCase().includes(state.search)
@@ -388,6 +400,7 @@ const Filters = (() => {
     state.status = '';
     state.window = '';
     state.prospection = false;
+    state.pipeline = false;
     state.types = new Set(allTypes);
     state.yearMin = bounds.yearMin;
     state.yearMax = bounds.yearMax;

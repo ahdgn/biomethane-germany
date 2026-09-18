@@ -1,0 +1,51 @@
+[
+  {
+    "site": "SEL986637071388",
+    "project": "Fox",
+    "status": "Under evaluation",
+    "confidence": "confirmed",
+    "note": "Biogas Fox — Soltau (Heidekreis). 4.33 MW installed on 3 engines, commissioned 2004; matches the project summary (4.2 MW peak / 1.4 MW rated, industrial park, conversion to 900 Nm3/h; grid connection live Sep 2026)."
+  },
+  {
+    "site": "SEL914887749061",
+    "project": "Otter (candidate A)",
+    "status": "Under evaluation",
+    "confidence": "probable",
+    "note": "Heidenau cluster, Lk. Harburg — next to the village of Otter. Gohde Gas 889 kW; matches the described lead plant (700 kW rated). Satellite 400 kW at 306 m, Heidenau West 1.4 MW at 2.5 km. ~37 km from Fox. To be confirmed by the team."
+  },
+  {
+    "site": "SEL905659794976",
+    "project": "Otter (candidate A)",
+    "status": "Under evaluation",
+    "confidence": "probable",
+    "note": "Heidenau cluster — the small plant next door (400 kW at 306 m from Gohde Gas). To be confirmed by the team."
+  },
+  {
+    "site": "SEL933361578034",
+    "project": "Otter (candidate A)",
+    "status": "Under evaluation",
+    "confidence": "probable",
+    "note": "Heidenau cluster — Bioenergie Heidenau West, 1.4 MW on 3 engines at 2.5 km (described as ~2.2 MW at ~2 km). To be confirmed by the team."
+  },
+  {
+    "site": "SEL996989865740",
+    "project": "Otter (candidate B)",
+    "status": "Under evaluation",
+    "confidence": "alternative",
+    "note": "Böhme cluster, Heidekreis, 32 km from Fox — alternative match. Hof Bunke 896 kW; BGA 1 366 kW at 885 m; Anlage BHKW 2 1.67 MW at 2.8 km. To be confirmed by the team."
+  },
+  {
+    "site": "SEL997759172877",
+    "project": "Otter (candidate B)",
+    "status": "Under evaluation",
+    "confidence": "alternative",
+    "note": "Böhme cluster — small plant (366 kW). To be confirmed by the team."
+  },
+  {
+    "site": "SEL951613034671",
+    "project": "Otter (candidate B)",
+    "status": "Under evaluation",
+    "confidence": "alternative",
+    "note": "Böhme cluster — large plant (1.67 MW). To be confirmed by the team."
+  }
+]
