@@ -60,6 +60,7 @@
     /* ---- Init des modules ---- */
     MapView.init();
     Charts.init();
+    Qualify.init();
     DataTable.init(loadedBases.includes('cogen'));
     Filters.init(allData, loadedBases);
 

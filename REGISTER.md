@@ -34,3 +34,21 @@ python tools/sync_register.py    # rewrites data/pipeline.json
 
 Then commit `data/pipeline.json` on a branch and open a PR. Sites absent from
 the register default to relationship "Unknown" and grid "Not rated" in the app.
+
+## Qualification form (in-app drawer)
+
+The app's site popups carry a **✎ Qualify** link that opens a right-side
+panel: site identity (MaStR data, read-only) + the shared Airtable form,
+prefilled with the MaStR-Nr and plant name. To connect it (once):
+
+1. In Airtable, open the **Sites** table → view sidebar → **Form** → create.
+2. Keep the fields: Plant name, Project, Relationship status, Team tags,
+   Grid difficulty, Permitted waste (t/a), Confidence, Notes. Leave
+   **MaStR-Nr in the form** (the app prefills and hides it).
+3. Click **Share form** → copy the link (https://airtable.com/app.../shr... or
+   https://airtable.com/shr...).
+4. Paste it into `REGISTER_FORM_URL` in `js/config.js`, bump the `?v=`
+   cache-buster in index.html, PR.
+
+Each submission creates a new row; when several rows share one MaStR-Nr,
+the sync keeps the most recent.
