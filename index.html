@@ -10,7 +10,7 @@
   <!-- Librairies vendorisées (pas de CDN, pas de fonte externe) -->
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/leaflet/MarkerCluster.css">
-  <link rel="stylesheet" href="css/style.css?v=20260902-5">
+  <link rel="stylesheet" href="css/style.css?v=20260918-1">
 </head>
 <body>
 
@@ -138,6 +138,32 @@
         <select id="filter-operator">
           <option value="">All districts</option>
         </select>
+      </div>
+
+      <!-- Relationship status (registre ACR) -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-eval">Relationship status</label>
+        <select id="filter-eval">
+          <option value="">All</option>
+          <option value="owners">Owners known</option>
+          <option value="feedstock">Feedstock suppliers nearby</option>
+          <option value="rejected">Evaluated &amp; rejected</option>
+          <option value="evaluating">Under evaluation</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+
+      <!-- Gas grid difficulty (expérience ACR/Redekon) -->
+      <div class="filter-group">
+        <label class="filter-label" for="filter-grid">Gas grid difficulty</label>
+        <select id="filter-grid">
+          <option value="">All</option>
+          <option value="easy">Easy (&le; 12 months)</option>
+          <option value="medium">Medium (12&ndash;24 months)</option>
+          <option value="hard">Hard (~36 months)</option>
+          <option value="unrated">Not rated</option>
+        </select>
+        <span class="filter-hint">Time to gas grid connection in ACR / Redekon experience &mdash; scored per operator by the team</span>
       </div>
 
       <!-- Statut -->
@@ -274,11 +300,11 @@
   <script src="vendor/chartjs/chart.umd.min.js"></script>
 
   <!-- App -->
-  <script src="js/config.js?v=20260902-5"></script>
-  <script src="js/filters.js?v=20260902-5"></script>
-  <script src="js/map.js?v=20260902-5"></script>
-  <script src="js/charts.js?v=20260902-5"></script>
-  <script src="js/table.js?v=20260902-5"></script>
-  <script src="js/app.js?v=20260902-5"></script>
+  <script src="js/config.js?v=20260918-1"></script>
+  <script src="js/filters.js?v=20260918-1"></script>
+  <script src="js/map.js?v=20260918-1"></script>
+  <script src="js/charts.js?v=20260918-1"></script>
+  <script src="js/table.js?v=20260918-1"></script>
+  <script src="js/app.js?v=20260918-1"></script>
 </body>
 </html>

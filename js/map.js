@@ -30,11 +30,20 @@ const MapView = (() => {
 
     // (CARTO impose désormais une clé API — tuiles filigranées sinon.)
     // Même fond que biomethane-france : Esri, natif jusqu'au zoom 16.
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    const baseMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Fond de carte &copy; <a href="https://www.esri.com/">Esri</a> · Données &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxNativeZoom: 16,
       maxZoom: 19,
     }).addTo(map);
+    // Vue satellite (demande équipe 09/09) — pour vérifier une installation
+    // sur imagerie avant d'aller sur site.
+    const baseSat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Imagery &copy; <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics',
+      maxNativeZoom: 18,
+      maxZoom: 19,
+    });
+    L.control.layers({ 'Map': baseMap, 'Satellite': baseSat }, null,
+      { position: 'topleft', collapsed: false }).addTo(map);
 
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
 
@@ -127,6 +136,10 @@ const MapView = (() => {
       rows.push(['Support end (est.)', String(d.echeanceAnnee)]);
     if (d.pipeline)
       rows.push(['ACR pipeline', `${d.pipeline.project} — ${d.pipeline.status} (${d.pipeline.confidence})`]);
+    if (d.evalStatus && d.evalStatus !== 'unknown')
+      rows.push(['Relationship', CONFIG.EVAL_LABELS[d.evalStatus] || d.evalStatus]);
+    if (d.gridRating)
+      rows.push(['Grid difficulty', CONFIG.GRID_LABELS[d.gridRating] || d.gridRating]);
 
     const hypNote = d.echeanceHyp
       ? `<div class="legend-note">Assumption: ${escapeHtml(d.echeanceHyp)}</div>` : '';

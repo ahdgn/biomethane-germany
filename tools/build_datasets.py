@@ -7,6 +7,8 @@ import os
 
 import pandas as pd
 import sqlalchemy as sa
+from shapely.geometry import Point, shape
+from shapely.prepared import prep
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "..", "data")
@@ -17,8 +19,45 @@ CHP_FUELS = ["Biogas", "Biomethan (Bioerdgas)", "Klärgas", "Deponiegas"]
 def clean(v):
     return None if pd.isna(v) else v
 
+class StateValidator:
+    """Réconcilie l'attribut Bundesland (auto-déclaré, parfois faux) avec
+    la géométrie (polygones VG2500 via deutschlandGeoJSON, dl-de/by-2-0).
+    Règle : si le point est clairement dans un autre Land que l'attribut
+    (au-delà d'une tolérance frontalière ~2 km), la géométrie fait foi ;
+    si le point est hors d'Allemagne, les coordonnées sont jugées fausses
+    et supprimées (retour au centroïde de commune côté app)."""
+
+    BORDER_TOL_DEG = 0.02  # ~2 km : jamais de correction en zone frontalière
+
+    def __init__(self):
+        gj = json.load(open(os.path.join(HERE, "geo", "bundeslaender.geo.json"),
+                            encoding="utf-8"))
+        self.states = [(f["properties"]["name"], shape(f["geometry"]))
+                       for f in gj["features"]]
+        self.prepared = [(name, prep(geom), geom) for name, geom in self.states]
+        self.stats = {"checked": 0, "bl_corrected": 0, "coords_dropped": 0}
+
+    def check(self, bl, lat, lon):
+        """Returns (bl, lat, lon) possibly corrected."""
+        if lat is None or lon is None:
+            return bl, lat, lon
+        self.stats["checked"] += 1
+        pt = Point(lon, lat)
+        inside = next((n for n, p, _ in self.prepared if p.covers(pt)), None)
+        if inside is None:
+            self.stats["coords_dropped"] += 1
+            return bl, None, None
+        if bl and inside != bl:
+            claimed = next((g for n, g in self.states if n == bl), None)
+            if claimed is not None and claimed.distance(pt) < self.BORDER_TOL_DEG:
+                return bl, lat, lon  # trop près de la frontière : bénéfice du doute
+            self.stats["bl_corrected"] += 1
+            return inside, lat, lon
+        return inside if not bl else bl, lat, lon
+
 def main():
     engine = sa.create_engine(f"sqlite:///{DB}")
+    validator = StateValidator()
 
     # ---- CHP conversion targets (biomass electricity units) ----
     bm = pd.read_sql('SELECT * FROM "biomass_extended"', engine)
@@ -41,17 +80,21 @@ def main():
         g = g.sort_values("p", ascending=False)
         top = g.iloc[0]
         annee = g["annee"].min()
+        v_bl, v_lat, v_lon = validator.check(
+            clean(top["Bundesland"]),
+            round(float(top["Breitengrad"]), 5) if pd.notna(top["Breitengrad"]) else None,
+            round(float(top["Laengengrad"]), 5) if pd.notna(top["Laengengrad"]) else None)
         sites.append({
             "id": sid,
             "nom": clean(top["NameStromerzeugungseinheit"]) or "Unnamed",
             "op": clean(top["AnlagenbetreiberMastrNummer"]),
-            "bl": clean(top["Bundesland"]),
+            "bl": v_bl,
             "lk": clean(top["Landkreis"]),
             "gem": clean(top["Gemeinde"]),
             "ags": clean(top["Gemeindeschluessel"]),
             "ort": clean(top["Ort"]),
-            "lat": round(float(top["Breitengrad"]), 5) if pd.notna(top["Breitengrad"]) else None,
-            "lon": round(float(top["Laengengrad"]), 5) if pd.notna(top["Laengengrad"]) else None,
+            "lat": v_lat,
+            "lon": v_lon,
             "kw": round(float(g["p"].sum()), 1),
             "n": int(len(g)),
             "annee": int(annee) if pd.notna(annee) else None,
@@ -85,18 +128,22 @@ def main():
     gp["annee"] = pd.to_datetime(gp["Inbetriebnahmedatum"], errors="coerce").dt.year
     out = []
     for _, u in gp.iterrows():
+        v_bl, v_lat, v_lon = validator.check(
+            clean(u["Bundesland"]),
+            round(float(u["Breitengrad"]), 5) if pd.notna(u["Breitengrad"]) else None,
+            round(float(u["Laengengrad"]), 5) if pd.notna(u["Laengengrad"]) else None)
         out.append({
             "id": clean(u["EinheitMastrNummer"]),
             "nom": clean(u["NameGaserzeugungseinheit"]) or "Unnamed",
             "op": clean(u["AnlagenbetreiberMastrNummer"]),
-            "bl": clean(u["Bundesland"]),
+            "bl": v_bl,
             "lk": kreis_map.get(str(u["Gemeindeschluessel"])[:5])
                   if pd.notna(u["Gemeindeschluessel"]) else None,
             "gem": clean(u["Gemeinde"]),
             "ags": clean(u["Gemeindeschluessel"]),
             "ort": clean(u["Ort"]),
-            "lat": round(float(u["Breitengrad"]), 5) if pd.notna(u["Breitengrad"]) else None,
-            "lon": round(float(u["Laengengrad"]), 5) if pd.notna(u["Laengengrad"]) else None,
+            "lat": v_lat,
+            "lon": v_lon,
             "kw": round(float(u["Erzeugungsleistung"]), 1)
                   if pd.notna(u["Erzeugungsleistung"]) else None,
             "annee": int(u["annee"]) if pd.notna(u["annee"]) else None,
@@ -108,6 +155,7 @@ def main():
     with open(os.path.join(DATA, "einspeisung.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     print(f"einspeisung.json: {len(out)} units")
+    print(f"geo validation: {validator.stats}")
 
 if __name__ == "__main__":
     main()
