@@ -48,6 +48,11 @@ const CONFIG = (() => {
     evaluating: 'Under evaluation',
     unknown: 'Unknown',
   };
+  const TAG_LABELS = {
+    owners: 'Know the owners',
+    politicians: 'Know politicians / planning authority',
+    technology: 'Know the technology (advised or built)',
+  };
   const GRID_LABELS = {
     easy: 'Easy (\u2264 12 months)',
     medium: 'Medium (12\u201324 months)',
@@ -185,7 +190,7 @@ const CONFIG = (() => {
       && fin >= 2026 && fin <= 2032 && !d.zuschlag;
   }
 
-  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, TYPE_DESCRIPTIONS, EVAL_LABELS, GRID_LABELS, DATASETS, CAP_UNITS, SOURCE_NOTE,
+  return { PALETTE, TYPE_COLORS, TYPE_FALLBACK, TYPE_DESCRIPTIONS, EVAL_LABELS, TAG_LABELS, GRID_LABELS, DATASETS, CAP_UNITS, SOURCE_NOTE,
            YEAR_FLOOR, YEAR_FLOOR_LABEL,
            fmtInt, fmtNum, fmtDate, escapeHtml, typeColor, echeance, prospection1 };
 })();

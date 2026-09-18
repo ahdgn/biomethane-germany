@@ -10,7 +10,7 @@
   <!-- Librairies vendorisées (pas de CDN, pas de fonte externe) -->
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/leaflet/MarkerCluster.css">
-  <link rel="stylesheet" href="css/style.css?v=20260918-2">
+  <link rel="stylesheet" href="css/style.css?v=20260918-3">
 </head>
 <body>
 
@@ -72,6 +72,18 @@
             <span class="switch-text">ACR pipeline only</span>
           </label>
         </div>
+      </div>
+
+      <!-- Filtre rayon (activé depuis un popup carte) -->
+      <div class="filter-group" id="group-radius" hidden>
+        <span class="filter-label">Radius search</span>
+        <span class="filter-hint" id="radius-label"></span>
+        <div class="segmented segmented-sm" id="radius-km" role="group" aria-label="Radius">
+          <button class="seg-btn" data-km="25" aria-pressed="false">25 km</button>
+          <button class="seg-btn" data-km="50" aria-pressed="true">50 km</button>
+          <button class="seg-btn" data-km="100" aria-pressed="false">100 km</button>
+        </div>
+        <button class="btn-secondary" id="radius-clear">Clear radius</button>
       </div>
 
       <!-- Base (visible quand plusieurs jeux de données sont chargés) -->
@@ -300,11 +312,11 @@
   <script src="vendor/chartjs/chart.umd.min.js"></script>
 
   <!-- App -->
-  <script src="js/config.js?v=20260918-2"></script>
-  <script src="js/filters.js?v=20260918-2"></script>
-  <script src="js/map.js?v=20260918-2"></script>
-  <script src="js/charts.js?v=20260918-2"></script>
-  <script src="js/table.js?v=20260918-2"></script>
-  <script src="js/app.js?v=20260918-2"></script>
+  <script src="js/config.js?v=20260918-3"></script>
+  <script src="js/filters.js?v=20260918-3"></script>
+  <script src="js/map.js?v=20260918-3"></script>
+  <script src="js/charts.js?v=20260918-3"></script>
+  <script src="js/table.js?v=20260918-3"></script>
+  <script src="js/app.js?v=20260918-3"></script>
 </body>
 </html>

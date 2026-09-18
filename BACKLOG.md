@@ -13,12 +13,12 @@ most relevant integrations, keep costs low.
 - [x] This backlog file
 
 ## v1.2 — Team knowledge capture
-- [ ] Merge PR #3 (ACR pipeline layer) and PR #4 (relationship status + grid
-      difficulty) — prerequisites for everything below
-- [ ] Register moves to Airtable (keyed on MaStR-Nr): status, grid rating,
-      Daniel's tags (owners / politicians & planning authority / technology
-      known-built), permitted waste, free-text notes; ETL pulls into the app
-- [ ] Radius search: plants within ~50 km of a chosen site (call, 09/09)
+- [x] Merge PR #3 (ACR pipeline layer) and PR #4 (relationship status + grid
+      difficulty) — shipped via PR #5
+- [x] Register moves to Airtable (keyed on MaStR-Nr): sync script + schema in
+      REGISTER.md; app shows tags / permitted waste / notes. PENDING: reconnect
+      the Airtable connector with write access, create the base, seed it
+- [x] Radius search: '⌖ 50 km around' link in every plant popup, 25/50/100 km, shareable URL
 - [ ] DSO name per site (municipality → gas supply-area mapping)
 
 ## v2 — Data enrichment
