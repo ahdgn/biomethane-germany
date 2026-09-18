@@ -149,7 +149,7 @@ const CONFIG = (() => {
   /* Lien partagé du formulaire Airtable « Qualify a site » (voir REGISTER.md).
      Vide = le panneau de qualification montre l'identité du site et explique
      que le formulaire n'est pas encore branché. */
-  const REGISTER_FORM_URL = '';
+  const REGISTER_FORM_URL = 'https://airtable.com/app1HPXkXIa9xYSin/shr39m5HuDyXASrit';
 
   // ---- Formats (UI française, données allemandes) ----
   const fmtInt = (n) => (n == null ? '—' : Math.round(n).toLocaleString('en-GB'));
