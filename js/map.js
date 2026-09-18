@@ -206,6 +206,9 @@ const MapView = (() => {
       rows.splice(1, 0, ['Fuel', d.combustible]);
     if (d.echeanceAnnee != null)
       rows.push(['Support end (est.)', String(d.echeanceAnnee)]);
+    if (d.base === 'cogen')
+      rows.push(['Permit regime (est.)', d.bimschg
+        ? 'BImSchG likely (≥ 1 MW thermal)' : 'Baugenehmigung possible (< 1 MW thermal)']);
     if (d.inPipeline)
       rows.push(['ACR pipeline', [d.pipeline.project, d.pipeline.status, d.pipeline.confidence]
         .filter(Boolean).join(' \u00b7 ')]);

@@ -193,7 +193,7 @@ const DataTable = (() => {
     const headers = ['Base', 'Plant', 'Municipality', 'District (Landkreis)', 'Bundesland', 'Type',
       'Capacity', 'Capacity unit', 'Commissioned',
       'Support end (est.)', 'Support end assumption', 'Operator (MaStR-Nr)', 'Technology',
-      'Status', 'ACR project', 'ACR status', 'Relationship status', 'Grid difficulty', 'Team tags', 'Permitted waste', 'Latitude', 'Longitude', 'Geo precision', 'Google Maps link'];
+      'Status', 'Permit regime (est.)', 'ACR project', 'ACR status', 'Relationship status', 'Grid difficulty', 'Team tags', 'Permitted waste', 'Latitude', 'Longitude', 'Geo precision', 'Google Maps link'];
 
     const rows = currentData.map(d => [
       d.base === 'cogen' ? 'CHP' : 'Injection',
@@ -205,6 +205,7 @@ const DataTable = (() => {
       d.echeanceHyp || '',
       d.opId || '', d.reseau,
       d.ouvert ? 'Operating' : 'Closed',
+      d.base === 'cogen' ? (d.bimschg ? 'BImSchG likely' : 'Baugenehmigung possible') : '',
       d.pipeline ? d.pipeline.project : '',
       d.pipeline ? `${d.pipeline.status} (${d.pipeline.confidence})` : '',
       CONFIG.EVAL_LABELS[d.evalStatus] || 'Unknown',

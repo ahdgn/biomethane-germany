@@ -129,6 +129,7 @@ const CONFIG = (() => {
         puissanceKw: d.kw || null,
         combustible: '',
         nUnites: d.n || 1,
+        bimschg: !!d.bim,     // BImSchG probable (heuristique >= 400 kW el)
         flex: !!d.flex,       // Flexiprämie revendiquée
         zuschlag: !!d.zus,    // Anschlussförderung déjà obtenue (appel d'offres)
       }),

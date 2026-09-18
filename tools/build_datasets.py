@@ -104,6 +104,11 @@ def main():
             "tech": clean(top["Technologie"]),
             "flex": bool(g["flex"].any()),
             "zus": bool(g["zus"].any()),
+            # Regime d'autorisation estime : >= 400 kW el ~ 1 MW thermique
+            # -> BImSchG-Genehmigung probable (4. BImSchV) ; en dessous,
+            # simple Baugenehmigung possible. Heuristique a affiner site
+            # par site via le registre (retour Daniel/Lars 09/09).
+            "bim": bool(g["p"].sum() >= 400),
         })
     os.makedirs(DATA, exist_ok=True)
     with open(os.path.join(DATA, "chp-anlagen.json"), "w", encoding="utf-8") as f:
