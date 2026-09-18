@@ -127,13 +127,21 @@ const MapView = (() => {
   }
 
   /* Cercle du filtre rayon : dessiné/retiré par Filters via show/hideRadius */
+  /* Double trait (halo blanc + pointilles teal) : lisible sur fond clair
+     comme sur imagerie satellite. */
   function showRadius(lat, lon, km) {
     hideRadius();
-    radiusCircle = L.circle([lat, lon], {
-      radius: km * 1000, color: PALETTE.teal, weight: 1.5,
-      dashArray: '6 6', fillColor: PALETTE.teal, fillOpacity: 0.05,
-    }).addTo(map);
-    map.fitBounds(radiusCircle.getBounds(), { padding: [20, 20] });
+    const casing = L.circle([lat, lon], {
+      radius: km * 1000, color: '#FFFFFF', weight: 5, opacity: 0.85,
+      fill: false, interactive: false,
+    });
+    const dash = L.circle([lat, lon], {
+      radius: km * 1000, color: PALETTE.teal, weight: 2.25,
+      dashArray: '8 8', fillColor: PALETTE.teal, fillOpacity: 0.05,
+      interactive: false,
+    });
+    radiusCircle = L.layerGroup([casing, dash]).addTo(map);
+    map.fitBounds(dash.getBounds(), { padding: [20, 20] });
   }
   function hideRadius() {
     if (radiusCircle) { map.removeLayer(radiusCircle); radiusCircle = null; }
